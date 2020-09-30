@@ -12,5 +12,5 @@
 	branch = master
 [submodule "vendor/librw"]
 	path = vendor/librw
-	url = https://github.com/AGraber/librw.git
-	branch = nx
+	url = https://github.com/SonicMastr/librw-Vita/
+	branch = vita
