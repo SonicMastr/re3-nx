@@ -24,9 +24,8 @@
 #endif
 #endif
 
-#if defined __SWITCH__
-#include <switch.h>
-#include "switch_compat.h"
+#ifdef VITA
+#include "vita_compat.h"
 #endif
 
 #include <rwcore.h>

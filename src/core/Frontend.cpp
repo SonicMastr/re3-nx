@@ -95,7 +95,7 @@ int8 CMenuManager::m_PrefsVsyncDisp = 1;
 int8 CMenuManager::m_PrefsFrameLimiter = 1;
 int8 CMenuManager::m_PrefsShowSubtitles = 1;
 int8 CMenuManager::m_PrefsSpeakers;
-#ifdef __SWITCH__
+#ifdef VITA
 int32 CMenuManager::m_ControlMethod = CONTROL_CLASSIC;
 #else
 int32 CMenuManager::m_ControlMethod;
@@ -108,7 +108,7 @@ bool CMenuManager::m_PrefsAllowNastyGame = true;
 bool CMenuManager::m_bStartUpFrontEndRequested;
 bool CMenuManager::m_bShutDownFrontEndRequested;
 
-#ifdef __SWITCH__
+#ifdef VITA
 int8 CMenuManager::m_PrefsUseWideScreen = AR_16_9;
 #else
 int8 CMenuManager::m_PrefsUseWideScreen;
@@ -121,7 +121,7 @@ int32 CMenuManager::m_PrefsMusicVolume = 102;
 int32 CMenuManager::m_PrefsSfxVolume = 102;
 
 #ifdef CUTSCENE_BORDERS_SWITCH
-#ifdef __SWITCH__
+#ifdef VITA
 bool CMenuManager::m_PrefsCutsceneBorders = false;
 #else
 bool CMenuManager::m_PrefsCutsceneBorders = true;

@@ -28,7 +28,7 @@ struct myFILE
 static myFILE myfiles[NUMFILES];
 
 
-#if !defined(_WIN32)
+#if !defined(_WIN32) && !defined(VITA)
 #include <dirent.h>
 #include <errno.h>
 #include <unistd.h>
@@ -44,6 +44,12 @@ void mychdir(char const *path)
     } else {
         errno = ENOENT;
     }
+}
+#elif defined(VITA)
+#include "vita_compat.h"
+#define _getcwd _vita_getcwd
+void mychdir(char const *path)
+{
 }
 #else
 #define mychdir chdir

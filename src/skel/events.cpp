@@ -821,7 +821,7 @@ PadHandler(RsEvent event, void *param)
 RwBool
 AttachInputDevices(void)
 {
-	#ifndef __SWITCH__
+	#ifndef VITA
 	RsInputDeviceAttach(rsKEYBOARD, KeyboardHandler);
 	#endif
 

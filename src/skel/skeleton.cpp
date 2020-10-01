@@ -106,7 +106,7 @@ RsInputDeviceAttach(RsInputDeviceType inputDevice,
 {
 	switch (inputDevice)
 	{
-		#ifndef __SWITCH__
+		#if !defined(__SWITCH__) && !defined(VITA)
 		case rsKEYBOARD:
 			{
 				RsGlobal.keyboard.inputEventHandler = inputEventHandler;

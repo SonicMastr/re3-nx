@@ -71,7 +71,7 @@ DWORD _dwOperatingSystemVersion;
 #include "resource.h"
 #else
 long _dwOperatingSystemVersion;
-#ifndef __SWITCH__ // missing in switch devkit
+#if !defined(__SWITCH__) && !defined(VITA) // missing in switch devkit
 #include <sys/sysinfo.h>
 #endif
 #include <stddef.h>
@@ -101,9 +101,13 @@ void _psCreateFolder(const char *path)
 	char fullpath[PATH_MAX];
 	realpath(path, fullpath);
 
-	if (lstat(fullpath, &info) != 0) {
+	if (stat(fullpath, &info) != 0) {
 		if (errno == ENOENT || (errno != EACCES && !S_ISDIR(info.st_mode))) {
+#ifdef VITA
+			sceIoMkdir(fullpath, 0777);
+#else
 			mkdir(fullpath, 0755);
+#endif
 		}
 	}
 #endif
@@ -230,7 +234,7 @@ psTimer(void)
 #ifdef __linux__
 	clock_gettime(CLOCK_MONOTONIC_RAW, &start);
 #else
-	clock_gettime(CLOCK_MONOTONIC, &start);
+	_vita_clock_gettime(CLOCK_MONOTONIC, &start);
 #endif
 	return start.tv_sec * 1000.0 + start.tv_nsec/1000000.0;
 }
@@ -438,7 +442,7 @@ psInitialize(void)
 
 #endif
 
-#ifndef __SWITCH__
+#if !defined(__SWITCH__) && !defined(VITA)
 	struct sysinfo systemInfo;
 	sysinfo(&systemInfo);
 	
@@ -447,6 +451,7 @@ psInitialize(void)
 
 	debug("Physical memory size %u\n", systemInfo.totalram);
 	debug("Available physical memory %u\n", systemInfo.freeram);
+#elif defined(VITA)
 #else
 	size_t total_mem_available, total_mem_usage;
 	svcGetInfo(&total_mem_available, 6, 0xffff8001, 0);
@@ -713,7 +718,7 @@ psSelectDevice()
 		   FrontEndMenuManager.m_nPrefsHeight == 0 ||
 		   FrontEndMenuManager.m_nPrefsDepth == 0){
 			// Defaults if nothing specified
-			#ifndef __SWITCH__
+			#if !defined(__SWITCH__)
 			const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 			FrontEndMenuManager.m_nPrefsWidth = mode->width;
 			FrontEndMenuManager.m_nPrefsHeight = mode->height;
@@ -733,7 +738,7 @@ psSelectDevice()
 				}
 			}
 			#endif
-			FrontEndMenuManager.m_nPrefsDepth = 32;
+			FrontEndMenuManager.m_nPrefsDepth = 16;
 			FrontEndMenuManager.m_nPrefsWindowed = 0;
 		}
 
@@ -883,7 +888,7 @@ void psPostRWinit(void)
 	RwVideoMode vm;
 	RwEngineGetVideoModeInfo(&vm, GcurSelVM);
 
-	#ifndef __SWITCH__
+	#if !defined(__SWITCH__) && !defined(VITA)
 	glfwSetKeyCallback(PSGLOBAL(window), keypressCB);
 	#endif
 	glfwSetWindowSizeCallback(PSGLOBAL(window), resizeCB);
@@ -1196,7 +1201,7 @@ void HandleExit()
 }
 
 #ifndef _WIN32
-void terminateHandler(int sig, siginfo_t *info, void *ucontext) {
+void terminateHandler(int sig, void *info, void *ucontext) {
 	RsGlobal.quit = TRUE;
 }
 
@@ -1431,8 +1436,7 @@ WinMain(HINSTANCE instance,
 #endif
 
 #else
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 #endif
 #ifdef __SWITCH__
@@ -1445,7 +1449,9 @@ main(int argc, char *argv[])
 	RwV2d pos;
 	RwInt32 i;
 
-#if !defined(_WIN32) && !defined(__SWITCH__)
+	printf("Starting\n");
+
+#if !defined(_WIN32) && !defined(__SWITCH__) && !defined(VITA)
 	struct sigaction act;
 	act.sa_sigaction = terminateHandler;
 	act.sa_flags = SA_SIGINFO;

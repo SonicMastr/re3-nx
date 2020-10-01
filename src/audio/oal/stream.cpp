@@ -13,7 +13,7 @@
 #else
 #include "crossplatform.h"
 #endif
-#ifndef __SWITCH__
+#ifndef VITA
 #include <sndfile.h>
 #else
 #define DR_WAV_IMPLEMENTATION
@@ -24,7 +24,7 @@
 
 #ifndef AUDIO_OPUS
 
-#ifndef __SWITCH__ // 
+#ifndef VITA // 
 class CSndFile : public IDecoder
 {
 	SNDFILE *m_pfSound;
@@ -413,7 +413,7 @@ CStream::CStream(char *filename, ALuint &source, ALuint (&buffers)[NUM_STREAMBUF
 	if (!strcasecmp(&m_aFilename[strlen(m_aFilename) - strlen(".mp3")], ".mp3"))
 		m_pSoundFile = new CMP3File(m_aFilename);
 	else if (!strcasecmp(&m_aFilename[strlen(m_aFilename) - strlen(".wav")], ".wav"))
-		#ifdef __SWITCH__
+		#ifdef VITA
 		m_pSoundFile = new CDrWav(m_aFilename);
 		#else
 		m_pSoundFile = new CSndFile(m_aFilename);

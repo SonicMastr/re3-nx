@@ -1890,8 +1890,7 @@ void GameInit()
 	}
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 #ifdef __MWERKS__
 	mwInit(); // metrowerks initialisation
