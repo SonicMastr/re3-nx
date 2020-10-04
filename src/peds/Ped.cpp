@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "main.h"
@@ -17440,8 +17442,8 @@ CPed::SetExitBoat(CVehicle *boat)
 }
 
 #ifdef COMPATIBLE_SAVES
-#define CopyFromBuf(buf, data) memcpy(&data, buf, sizeof(data)); SkipSaveBuf(buf, sizeof(data));
-#define CopyToBuf(buf, data) memcpy(buf, &data, sizeof(data)); SkipSaveBuf(buf, sizeof(data));
+#define CopyFromBuf(buf, data) sceClibMemcpy(&data, buf, sizeof(data)); SkipSaveBuf(buf, sizeof(data));
+#define CopyToBuf(buf, data) sceClibMemcpy(buf, &data, sizeof(data)); SkipSaveBuf(buf, sizeof(data));
 void
 CPed::Save(uint8*& buf)
 {
