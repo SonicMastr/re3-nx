@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "AudioManager.h"
@@ -724,7 +726,7 @@ cAudioManager::AddReleasingSounds()
 				}
 				sample.m_bReleasingSoundFlag = 0;
 			}
-			memcpy(&m_sQueueSample, &sample, sizeof(tSound));
+			sceClibMemcpy(&m_sQueueSample, &sample, sizeof(tSound));
 			AddSampleToRequestedQueue();
 		}
 	}
@@ -854,7 +856,7 @@ cAudioManager::ProcessActiveQueues()
 								continue;
 							sample.m_nReleasingVolumeDivider = v29 / v28 + 1;
 						}
-						memcpy(&m_asActiveSamples[j], &sample, sizeof(tSound));
+						sceClibMemcpy(&m_asActiveSamples[j], &sample, sizeof(tSound));
 						if (!m_asActiveSamples[j].m_bIs2D)
 							TranslateEntity(&m_asActiveSamples[j].m_vecPos, &position);
 						if (field_4) {

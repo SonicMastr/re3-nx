@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #ifdef AUDIO_OAL
@@ -33,7 +35,7 @@ public:
 	CSndFile(const char *path) :
 		m_pfSound(nil)
 	{
-		memset(&m_soundInfo, 0, sizeof(m_soundInfo));
+		sceClibMemset(&m_soundInfo, 0, sizeof(m_soundInfo));
 		m_pfSound = sf_open(path, SFM_READ, &m_soundInfo);
 	}
 	
@@ -98,7 +100,7 @@ public:
 	CDrWav(const char *path) :
 		m_bIsLoaded(false)
 	{
-		memset(&m_drWav, 0, sizeof(m_drWav));
+		sceClibMemset(&m_drWav, 0, sizeof(m_drWav));
 		if( !drwav_init_file(&m_drWav, path, NULL) ) {
 			return;
 		}

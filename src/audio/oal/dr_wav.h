@@ -147,6 +147,8 @@ extern "C" {
 #define DRWAV_VERSION_REVISION  11
 #define DRWAV_VERSION_STRING    DRWAV_XSTRINGIFY(DRWAV_VERSION_MAJOR) "." DRWAV_XSTRINGIFY(DRWAV_VERSION_MINOR) "." DRWAV_XSTRINGIFY(DRWAV_VERSION_REVISION)
 
+#include <psp2/kernel/clib.h>
+
 #include <stddef.h> /* For size_t. */
 
 /* Sized types. */
@@ -979,10 +981,10 @@ DRWAV_API drwav_bool32 drwav_fourcc_equal(const drwav_uint8* a, const char* b);
 #define DRWAV_FREE(p)                      free((p))
 #endif
 #ifndef DRWAV_COPY_MEMORY
-#define DRWAV_COPY_MEMORY(dst, src, sz)    memcpy((dst), (src), (sz))
+#define DRWAV_COPY_MEMORY(dst, src, sz)    sceClibMemcpy((dst), (src), (sz))
 #endif
 #ifndef DRWAV_ZERO_MEMORY
-#define DRWAV_ZERO_MEMORY(p, sz)           memset((p), 0, (sz))
+#define DRWAV_ZERO_MEMORY(p, sz)           sceClibMemset((p), 0, (sz))
 #endif
 #ifndef DRWAV_ZERO_OBJECT
 #define DRWAV_ZERO_OBJECT(p)               DRWAV_ZERO_MEMORY((p), sizeof(*p))
@@ -1670,7 +1672,7 @@ static drwav_bool32 drwav__read_fmt(drwav_read_proc onRead, drwav_seek_proc onSe
     fmtOut->extendedSize       = 0;
     fmtOut->validBitsPerSample = 0;
     fmtOut->channelMask        = 0;
-    memset(fmtOut->subFormat, 0, sizeof(fmtOut->subFormat));
+    sceClibMemset(fmtOut->subFormat, 0, sizeof(fmtOut->subFormat));
 
     if (header.sizeInBytes > 16) {
         drwav_uint8 fmt_cbSize[2];

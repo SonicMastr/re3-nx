@@ -7,6 +7,8 @@
 *																								*
 ************************************************************************************************/
 
+#include <psp2/kernel/clib.h>
+
 #include "eax-util.h"
 #include <math.h>
 
@@ -47,12 +49,12 @@ bool EAX3ListenerInterpolate(LPEAXLISTENERPROPERTIES lpStart, LPEAXLISTENERPROPE
 
 	if (flRatio >= 1.0f)
 	{
-		memcpy(lpResult, lpFinish, sizeof(EAXLISTENERPROPERTIES));
+		sceClibMemcpy(lpResult, lpFinish, sizeof(EAXLISTENERPROPERTIES));
 		return true;
 	}
 	else if (flRatio <= 0.0f)
 	{
-		memcpy(lpResult, lpStart, sizeof(EAXLISTENERPROPERTIES));
+		sceClibMemcpy(lpResult, lpStart, sizeof(EAXLISTENERPROPERTIES));
 		return true;
 	}
 

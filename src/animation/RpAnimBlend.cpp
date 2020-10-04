@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "RwHelper.h"
@@ -163,7 +165,7 @@ RpAnimBlendClumpInitSkinned(RpClump *clump)
 	clumpData->SetNumberOfBones(numBones);
 	hier = GetAnimHierarchyFromSkinClump(clump);
 	assert(hier);
-	memset(boneTab, 0, sizeof(boneTab));
+	sceClibMemset(boneTab, 0, sizeof(boneTab));
 	SkinGetBonePositionsToTable(clump, boneTab);
 
 	AnimBlendFrameData *frames = clumpData->frames;

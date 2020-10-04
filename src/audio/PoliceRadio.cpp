@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "DMAudio.h"
@@ -36,7 +38,7 @@ void
 cAudioManager::InitialisePoliceRadioZones()
 {
 	for (int32 i = 0; i < NUMAUDIOZONES; i++)
-		memset(ZoneSfx[i].m_aName, 0, 8);
+		sceClibMemset(ZoneSfx[i].m_aName, 0, 8);
 
 #define SETZONESFX(i, name, sample) \
 	strcpy(ZoneSfx[i].m_aName, name); \
