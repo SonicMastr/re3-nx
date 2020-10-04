@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "AnimBlendAssociation.h"
@@ -1122,18 +1124,18 @@ void CReplay::StoreStuffInMem(void)
 	CPools::GetEntryInfoNodePool()->Store(pBuf8, pBuf9);
 	CPools::GetDummyPool()->Store(pBuf10, pBuf11);
 	pWorld1 = new uint8[sizeof(CSector) * NUMSECTORS_X * NUMSECTORS_Y];
-	memcpy(pWorld1, CWorld::GetSector(0, 0), NUMSECTORS_X * NUMSECTORS_Y * sizeof(CSector));
+	sceClibMemcpy(pWorld1, CWorld::GetSector(0, 0), NUMSECTORS_X * NUMSECTORS_Y * sizeof(CSector));
 	WorldPtrList = CWorld::GetMovingEntityList().first; // why
 	BigBuildingPtrList = CWorld::GetBigBuildingList(LEVEL_GENERIC).first;
 	pPickups = new uint8[sizeof(CPickup) * NUMPICKUPS];
-	memcpy(pPickups, CPickups::aPickUps, NUMPICKUPS * sizeof(CPickup));
+	sceClibMemcpy(pPickups, CPickups::aPickUps, NUMPICKUPS * sizeof(CPickup));
 	pReferences = new uint8[(sizeof(CReference) * NUMREFERENCES)];
-	memcpy(pReferences, CReferences::aRefs, NUMREFERENCES * sizeof(CReference));
+	sceClibMemcpy(pReferences, CReferences::aRefs, NUMREFERENCES * sizeof(CReference));
 	pEmptyReferences = CReferences::pEmptyList;
 	pStoredCam = new uint8[sizeof(CCamera)];
-	memcpy(pStoredCam, &TheCamera, sizeof(CCamera));
+	sceClibMemcpy(pStoredCam, &TheCamera, sizeof(CCamera));
 	pRadarBlips = new uint8[sizeof(sRadarTrace) * NUMRADARBLIPS];
-	memcpy(pRadarBlips, CRadar::ms_RadarTrace, NUMRADARBLIPS * sizeof(sRadarTrace));
+	sceClibMemcpy(pRadarBlips, CRadar::ms_RadarTrace, NUMRADARBLIPS * sizeof(sRadarTrace));
 	PlayerWanted = *FindPlayerPed()->m_pWanted;
 	PlayerInfo = CWorld::Players[0];
 	Time1 = CTimer::GetTimeInMilliseconds();
@@ -1166,23 +1168,23 @@ void CReplay::RestoreStuffFromMem(void)
 	CPools::GetPtrNodePool()->CopyBack(pBuf6, pBuf7);
 	CPools::GetEntryInfoNodePool()->CopyBack(pBuf8, pBuf9);
 	CPools::GetDummyPool()->CopyBack(pBuf10, pBuf11);
-	memcpy(CWorld::GetSector(0, 0), pWorld1, sizeof(CSector) * NUMSECTORS_X * NUMSECTORS_Y);
+	sceClibMemcpy(CWorld::GetSector(0, 0), pWorld1, sizeof(CSector) * NUMSECTORS_X * NUMSECTORS_Y);
 	delete[] pWorld1;
 	pWorld1 = nil;
 	CWorld::GetMovingEntityList().first = WorldPtrList;
 	CWorld::GetBigBuildingList(LEVEL_GENERIC).first = BigBuildingPtrList;
-	memcpy(CPickups::aPickUps, pPickups, sizeof(CPickup) * NUMPICKUPS);
+	sceClibMemcpy(CPickups::aPickUps, pPickups, sizeof(CPickup) * NUMPICKUPS);
 	delete[] pPickups;
 	pPickups = nil;
-	memcpy(CReferences::aRefs, pReferences, sizeof(CReference) * NUMREFERENCES);
+	sceClibMemcpy(CReferences::aRefs, pReferences, sizeof(CReference) * NUMREFERENCES);
 	delete[] pReferences;
 	pReferences = nil;
 	CReferences::pEmptyList = pEmptyReferences;
 	pEmptyReferences = nil;
-	memcpy(&TheCamera, pStoredCam, sizeof(CCamera));
+	sceClibMemcpy(&TheCamera, pStoredCam, sizeof(CCamera));
 	delete[] pStoredCam;
 	pStoredCam = nil;
-	memcpy(CRadar::ms_RadarTrace, pRadarBlips, sizeof(sRadarTrace) * NUMRADARBLIPS);
+	sceClibMemcpy(CRadar::ms_RadarTrace, pRadarBlips, sizeof(sRadarTrace) * NUMRADARBLIPS);
 	delete[] pRadarBlips;
 	pRadarBlips = nil;
 #ifdef FIX_BUGS

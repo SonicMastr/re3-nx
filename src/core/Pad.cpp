@@ -6,6 +6,8 @@
 #endif
 #pragma warning( pop )
 
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 #include "crossplatform.h"
 #include "platform.h"
@@ -1011,7 +1013,7 @@ void CPad::AddToPCCheatString(char c)
 void CPad::AffectFromXinput(uint32 pad)
 {
 	XINPUT_STATE xstate;
-	memset(&xstate, 0, sizeof(XINPUT_STATE));
+	sceClibMemset(&xstate, 0, sizeof(XINPUT_STATE));
 	if (XInputGetState(pad, &xstate) == ERROR_SUCCESS)
 	{
 		PCTempJoyState.Circle = (xstate.Gamepad.wButtons & XINPUT_GAMEPAD_B) ? 255 : 0;
@@ -1050,7 +1052,7 @@ void CPad::AffectFromXinput(uint32 pad)
 
 		XINPUT_VIBRATION VibrationState;
 
-		memset(&VibrationState, 0, sizeof(XINPUT_VIBRATION));
+		sceClibMemset(&VibrationState, 0, sizeof(XINPUT_VIBRATION));
 
 		uint16 iLeftMotor = (uint16)((float)ShakeFreq / 255.0f * (float)0xffff);
 		uint16 iRightMotor = (uint16)((float)ShakeFreq / 255.0f * (float)0xffff);

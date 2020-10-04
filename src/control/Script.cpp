@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "Script.h"
@@ -1871,7 +1873,7 @@ void CTheScripts::Init()
 	NextFreeCollectiveIndex = 0;
 	LastRandomPedId = -1;
 	for (int i = 0; i < MAX_NUM_USED_OBJECTS; i++){
-		memset(&UsedObjectArray[i].name, 0, sizeof(UsedObjectArray[i].name));
+		sceClibMemset(&UsedObjectArray[i].name, 0, sizeof(UsedObjectArray[i].name));
 		UsedObjectArray[i].index = 0;
 	}
 	NumberOfUsedObjects = 0;

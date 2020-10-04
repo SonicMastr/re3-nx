@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "General.h"
@@ -252,9 +254,9 @@ CPathFind::AllocatePathFindInfoMem(int16 numPathGroups)
 
 	// NB: MIAMI doesn't use numPathGroups here but hardcodes 4500
 	InfoForTileCars = new CPathInfoForObject[12*numPathGroups];
-	memset(InfoForTileCars, 0, 12*numPathGroups*sizeof(CPathInfoForObject));
+	sceClibMemset(InfoForTileCars, 0, 12*numPathGroups*sizeof(CPathInfoForObject));
 	InfoForTilePeds = new CPathInfoForObject[12*numPathGroups];
-	memset(InfoForTilePeds, 0, 12*numPathGroups*sizeof(CPathInfoForObject));
+	sceClibMemset(InfoForTilePeds, 0, 12*numPathGroups*sizeof(CPathInfoForObject));
 
 	// unused
 	delete[] DetachedNodesCars;
@@ -262,9 +264,9 @@ CPathFind::AllocatePathFindInfoMem(int16 numPathGroups)
 	delete[] DetachedNodesPeds;
 	DetachedNodesPeds = nil;
 	DetachedNodesCars = new CTempDetachedNode[NUMDETACHED_CARS];
-	memset(DetachedNodesCars, 0, NUMDETACHED_CARS*sizeof(CTempDetachedNode));
+	sceClibMemset(DetachedNodesCars, 0, NUMDETACHED_CARS*sizeof(CTempDetachedNode));
 	DetachedNodesPeds = new CTempDetachedNode[NUMDETACHED_PEDS];
-	memset(DetachedNodesPeds, 0, NUMDETACHED_PEDS*sizeof(CTempDetachedNode));
+	sceClibMemset(DetachedNodesPeds, 0, NUMDETACHED_PEDS*sizeof(CTempDetachedNode));
 }
 
 void

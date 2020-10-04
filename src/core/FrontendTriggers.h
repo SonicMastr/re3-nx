@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 CTriggerCaller MemCardAccessTriggerCaller;
 
 void InitialiseTextsInMenuControllerInCar(CMenuPictureAndText *widget, CMenuManager::CONTRCONFIG cont);
@@ -79,8 +81,8 @@ wchar *PrintStatLine(char const *text, void *stat, unsigned char itsFloat, void 
 		char  line [64];
 		wchar uline[64];
 		
-		memset(line, 0, sizeof(line));
-		memset(uline, 0, sizeof(uline));
+		sceClibMemset(line, 0, sizeof(line));
+		sceClibMemset(uline, 0, sizeof(uline));
 
 		if (stat2)
 		{

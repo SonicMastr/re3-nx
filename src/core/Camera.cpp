@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "main.h"
@@ -101,7 +103,7 @@ CCamera::Init(void)
 		static const CCamera DummyCamera = CCamera(0.f);
 		*this = DummyCamera;
 	#else
-		memset(this, 0, sizeof(CCamera));	// getting rid of vtable, eh?
+		sceClibMemset(this, 0, sizeof(CCamera));	// getting rid of vtable, eh?
 	#endif
 	
 	#ifdef GTA3_1_1_PATCH
@@ -3066,7 +3068,7 @@ CCamera::LoadTrainCamNodes(char const *name)
 			}
 			field++;
 			bufpos++;
-			memset(token, 0, sizeof(token));
+			sceClibMemset(token, 0, sizeof(token));
 			tokpos = 0;
 			break;
 
@@ -3193,7 +3195,7 @@ CCamera::LoadPathSplines(int file)
 #endif
 			m_arrPathArray[i].m_arr_PathData[j] = atof(token);
 			j++;
-			memset(token, 0, 32);
+			sceClibMemset(token, 0, 32);
 			n = 0;
 			break;
 
@@ -3204,7 +3206,7 @@ CCamera::LoadPathSplines(int file)
 			m_arrPathArray[i].m_arr_PathData[j] = atof(token);
 			i++;
 			j = 0;
-			memset(token, 0, 32);
+			sceClibMemset(token, 0, 32);
 			n = 0;
 		}
 	}

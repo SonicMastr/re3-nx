@@ -59,6 +59,12 @@ void mychdir(char const *path)
 static int
 myfopen(const char *filename, const char *mode)
 {
+#if defined(VITA)
+	char vitaFilename[256];
+	snprintf(vitaFilename, 256, "app0:%s", filename);
+	filename = vitaFilename;
+#endif
+
 	int fd;
 	char realmode[10], *p;
 

@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "Automobile.h"
@@ -275,7 +277,7 @@ CPlayerInfo::SavePlayerInfo(uint8 *buf, uint32 *size)
 	// Interesting
 	*size = sizeof(CPlayerInfo);
 
-#define CopyToBuf(buf, data) memcpy(buf, &data, sizeof(data)); buf += sizeof(data);
+#define CopyToBuf(buf, data) sceClibMemcpy(buf, &data, sizeof(data)); buf += sizeof(data);
 	CopyToBuf(buf, CWorld::Players[CWorld::PlayerInFocus].m_nMoney);
 	CopyToBuf(buf, CWorld::Players[CWorld::PlayerInFocus].m_WBState);
 	CopyToBuf(buf, CWorld::Players[CWorld::PlayerInFocus].m_nWBTime);
@@ -295,7 +297,7 @@ CPlayerInfo::SavePlayerInfo(uint8 *buf, uint32 *size)
 void
 CPlayerInfo::LoadPlayerInfo(uint8 *buf, uint32 size)
 {
-#define CopyFromBuf(buf, data) memcpy(&data, buf, sizeof(data)); buf += sizeof(data);
+#define CopyFromBuf(buf, data) sceClibMemcpy(&data, buf, sizeof(data)); buf += sizeof(data);
 	CopyFromBuf(buf, CWorld::Players[CWorld::PlayerInFocus].m_nMoney);
 	CopyFromBuf(buf, CWorld::Players[CWorld::PlayerInFocus].m_WBState);
 	CopyFromBuf(buf, CWorld::Players[CWorld::PlayerInFocus].m_nWBTime);

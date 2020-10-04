@@ -1304,7 +1304,6 @@ AppEventHandler(RsEvent event, void *param)
 		case rsINPUTDEVICEATTACH:
 		{
 			AttachInputDevices();
-
 			return rsEVENTPROCESSED;
 		}
 

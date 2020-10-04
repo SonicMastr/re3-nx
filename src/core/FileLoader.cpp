@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 #include "main.h"
 
@@ -194,7 +196,7 @@ CFileLoader::LoadCollisionFile(const char *filename)
 	while(CFileMgr::Read(fd, (char*)&header, sizeof(header))){
 		assert(strncmp(header.ident, "COLL", 4) == 0);
 		CFileMgr::Read(fd, (char*)work_buff, header.size);
-		memcpy(modelname, work_buff, 24);
+		sceClibMemcpy(modelname, work_buff, 24);
 
 		mi = CModelInfo::GetModelInfo(modelname, nil);
 		if(mi){

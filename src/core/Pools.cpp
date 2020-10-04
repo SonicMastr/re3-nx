@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "Pools.h"
@@ -96,7 +98,7 @@ CPools::MakeSureSlotInObjectPoolIsEmpty(int32 slot)
 #if 0 // todo better
 		*newObject = *object;
 #else
-		memcpy(newObject, object, ms_pObjectPool->GetMaxEntrySize());
+		sceClibMemcpy(newObject, object, ms_pObjectPool->GetMaxEntrySize());
 #endif
 		CWorld::Add(newObject);
 		object->m_rwObject = nil;
@@ -105,8 +107,8 @@ CPools::MakeSureSlotInObjectPoolIsEmpty(int32 slot)
 	}
 }
 
-#define CopyFromBuf(buf, data) memcpy(&data, buf, sizeof(data)); SkipSaveBuf(buf, sizeof(data));
-#define CopyToBuf(buf, data) memcpy(buf, &data, sizeof(data)); SkipSaveBuf(buf, sizeof(data));
+#define CopyFromBuf(buf, data) sceClibMemcpy(&data, buf, sizeof(data)); SkipSaveBuf(buf, sizeof(data));
+#define CopyToBuf(buf, data) sceClibMemcpy(buf, &data, sizeof(data)); SkipSaveBuf(buf, sizeof(data));
 
 void CPools::LoadVehiclePool(uint8* buf, uint32 size)
 {
@@ -133,14 +135,14 @@ INITSAVEBUF
 #else
 		char* vbuf = new char[Max(CAutomobile::nSaveStructSize, CBoat::nSaveStructSize)];
 		if (type == VEHICLE_TYPE_BOAT) {
-			memcpy(vbuf, buf, sizeof(CBoat));
+			sceClibMemcpy(vbuf, buf, sizeof(CBoat));
 			SkipSaveBuf(buf, sizeof(CBoat));
 			CBoat* pBoat = new(slot) CBoat(model, RANDOM_VEHICLE);
 			pVehicle = pBoat;
 			--CCarCtrl::NumRandomCars;
 		}
 		else if (type == VEHICLE_TYPE_CAR) {
-			memcpy(vbuf, buf, sizeof(CAutomobile));
+			sceClibMemcpy(vbuf, buf, sizeof(CAutomobile));
 			SkipSaveBuf(buf, sizeof(CAutomobile));
 			CStreaming::RequestModel(model, 0); // is it needed?
 			CStreaming::LoadAllRequestedModels(false);
@@ -270,7 +272,7 @@ INITSAVEBUF
 				WriteSaveBuf(buf, (uint32)pVehicle->m_vehType);
 				WriteSaveBuf(buf, pVehicle->GetModelIndex());
 				WriteSaveBuf(buf, GetVehicleRef(pVehicle));
-				memcpy(buf, pVehicle, sizeof(CAutomobile));
+				sceClibMemcpy(buf, pVehicle, sizeof(CAutomobile));
 				SkipSaveBuf(buf, sizeof(CAutomobile));
 			}
 #ifdef MISSION_REPLAY
@@ -281,7 +283,7 @@ INITSAVEBUF
 				WriteSaveBuf(buf, (uint32)pVehicle->m_vehType);
 				WriteSaveBuf(buf, pVehicle->GetModelIndex());
 				WriteSaveBuf(buf, GetVehicleRef(pVehicle));
-				memcpy(buf, pVehicle, sizeof(CBoat));
+				sceClibMemcpy(buf, pVehicle, sizeof(CBoat));
 				SkipSaveBuf(buf, sizeof(CBoat));
 			}
 #endif
@@ -461,12 +463,12 @@ INITSAVEBUF
 #ifdef COMPATIBLE_SAVES
 			pPed->Save(buf);
 #else
-			memcpy(buf, pPed, sizeof(CPlayerPed));
+			sceClibMemcpy(buf, pPed, sizeof(CPlayerPed));
 			SkipSaveBuf(buf, sizeof(CPlayerPed));
 #endif
 			CopyToBuf(buf, CWanted::MaximumWantedLevel);
 			CopyToBuf(buf, CWanted::nMaximumWantedLevel);
-			memcpy(buf, CModelInfo::GetModelInfo(pPed->GetModelIndex())->GetName(), MAX_MODEL_NAME);
+			sceClibMemcpy(buf, CModelInfo::GetModelInfo(pPed->GetModelIndex())->GetName(), MAX_MODEL_NAME);
 			SkipSaveBuf(buf, MAX_MODEL_NAME);
 		}
 	}
@@ -493,7 +495,7 @@ INITSAVEBUF
 		char name[MAX_MODEL_NAME];
 		// Unfortunate hack: player model is stored after ped structure.
 		// It could be avoided by just using "player" because in practice it is always true.
-		memcpy(name, buf + CPlayerPed::nSaveStructSize + 2 * sizeof(int32), MAX_MODEL_NAME);
+		sceClibMemcpy(name, buf + CPlayerPed::nSaveStructSize + 2 * sizeof(int32), MAX_MODEL_NAME);
 		CStreaming::RequestSpecialModel(model, name, STREAMFLAGS_DONT_REMOVE);
 		CStreaming::LoadAllRequestedModels(false);
 
@@ -521,7 +523,7 @@ INITSAVEBUF
 		char name[MAX_MODEL_NAME];
 		// the code implies that there was idea to load non-player ped
 		if (pedtype == PEDTYPE_PLAYER1) { // always true
-			memcpy(pbuf, buf, sizeof(CPlayerPed));
+			sceClibMemcpy(pbuf, buf, sizeof(CPlayerPed));
 			SkipSaveBuf(buf, sizeof(CPlayerPed));
 			CopyFromBuf(buf, CWanted::MaximumWantedLevel);
 			CopyFromBuf(buf, CWanted::nMaximumWantedLevel);

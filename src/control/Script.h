@@ -1,4 +1,6 @@
 #pragma once
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 #include "PedType.h"
 #include "Text.h"
@@ -74,7 +76,7 @@ struct intro_text_line
 		m_nFont = 2; /* enum? */
 		m_fAtX = 0.0f;
 		m_fAtY = 0.0f;
-		memset(&m_Text, 0, sizeof(m_Text));
+		sceClibMemset(&m_Text, 0, sizeof(m_Text));
 	}
 };
 
