@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "ParticleObject.h"
@@ -1130,7 +1132,7 @@ CParticleObject::SaveParticle(uint8 *buffer, uint32 *length)
 #if 0 // todo better
 		*(CParticleObject*)buffer = *p;
 #else
-		memcpy(buffer, p, sizeof(CParticleObject));
+		sceClibMemcpy(buffer, p, sizeof(CParticleObject));
 #endif
 		buffer += sizeof(CParticleObject);
 	}
@@ -1140,7 +1142,7 @@ CParticleObject::SaveParticle(uint8 *buffer, uint32 *length)
 #if 0 // todo better
 		*(CParticleObject*)buffer = *p;
 #else
-		memcpy(buffer, p, sizeof(CParticleObject));
+		sceClibMemcpy(buffer, p, sizeof(CParticleObject));
 #endif
 		buffer += sizeof(CParticleObject);
 	}

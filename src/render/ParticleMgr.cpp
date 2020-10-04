@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "main.h"
@@ -10,7 +12,7 @@ const char *ParticleFilename = "PARTICLE.CFG";
 
 cParticleSystemMgr::cParticleSystemMgr()
 {
-	memset(this, 0, sizeof(*this));
+	sceClibMemset(this, 0, sizeof(*this));
 }
 
 void cParticleSystemMgr::Initialise()

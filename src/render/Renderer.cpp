@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "main.h"
@@ -618,7 +620,7 @@ CRenderer::ScanWorld(void)
 	RwMatrix *cammatrix;
 	RwV2d poly[3];
 
-	memset(vectors, 0, sizeof(vectors));
+	sceClibMemset(vectors, 0, sizeof(vectors));
 	vectors[CORNER_FAR_TOPLEFT].x = -vw.x * f;
 	vectors[CORNER_FAR_TOPLEFT].y = vw.y * f;
 	vectors[CORNER_FAR_TOPLEFT].z = f;
@@ -747,7 +749,7 @@ CRenderer::RequestObjectsInFrustum(void)
 	RwMatrix *cammatrix;
 	RwV2d poly[3];
 
-	memset(vectors, 0, sizeof(vectors));
+	sceClibMemset(vectors, 0, sizeof(vectors));
 	vectors[CORNER_FAR_TOPLEFT].x = -vw.x * f;
 	vectors[CORNER_FAR_TOPLEFT].y = vw.y * f;
 	vectors[CORNER_FAR_TOPLEFT].z = f;

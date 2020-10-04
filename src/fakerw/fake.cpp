@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #define _CRT_SECURE_NO_WARNINGS
 #define WITH_D3D
 #include <rwcore.h>
@@ -374,7 +376,7 @@ RwStream *RwStreamOpen(RwStreamType type, RwStreamAccessType accessType, const v
 	case rwSTREAMFILENAME:{
 		StreamFile fakefile;
 		file = rwNewT(StreamFile, 1, 0);
-		memcpy(file, &fakefile, sizeof(StreamFile));
+		sceClibMemcpy(file, &fakefile, sizeof(StreamFile));
 #ifndef _WIN32
 		char *r = casepath((char*)pData);
 		if (r) {
@@ -396,7 +398,7 @@ RwStream *RwStreamOpen(RwStreamType type, RwStreamAccessType accessType, const v
 		StreamMemory fakemem;
 		memargs = (RwMemory*)pData;
 		mem = rwNewT(StreamMemory, 1, 0);
-		memcpy(mem, &fakemem, sizeof(StreamMemory));
+		sceClibMemcpy(mem, &fakemem, sizeof(StreamMemory));
 		if(mem->open(memargs->start, memargs->length))
 			return mem;
 		rwFree(mem);
