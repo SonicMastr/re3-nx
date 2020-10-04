@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "FileMgr.h"
@@ -15,7 +17,7 @@ CText TheText;
 CText::CText(void)
 {
 	encoding = 'e';
-	memset(WideErrorString, 0, sizeof(WideErrorString));
+	sceClibMemset(WideErrorString, 0, sizeof(WideErrorString));
 }
 
 void

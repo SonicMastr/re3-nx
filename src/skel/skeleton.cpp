@@ -300,7 +300,7 @@ RsRwTerminate(void)
 
 	return;
 }
-
+#include <psp2/kernel/clib.h>
 /*
  *****************************************************************************
  */
@@ -312,7 +312,7 @@ RsRwInitialize(void *displayID)
 	/*
 	 * Start RenderWare...
 	 */
-	 
+
 	if (!RwEngineInit(psGetMemoryFunctions(), 0, rsRESOURCESDEFAULTARENASIZE))
 	{
 		return (FALSE);
@@ -343,22 +343,22 @@ RsRwInitialize(void *displayID)
 	{
 		return (FALSE);
 	}
-	
-	openParams.displayID = displayID;
 
+	openParams.displayID = displayID;
+	
 	if (!RwEngineOpen(&openParams))
 	{
 		RwEngineTerm();
 		return (FALSE);
 	}
-	
+
 	if (RsEventHandler(rsSELECTDEVICE, displayID) == rsEVENTERROR)
 	{
 		RwEngineClose();
 		RwEngineTerm();
 		return (FALSE);
 	}
-	
+
 	if (!RwEngineStart())
 	{
 		RwEngineClose();

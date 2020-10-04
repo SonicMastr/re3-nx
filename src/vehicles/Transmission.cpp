@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "Timer.h"
@@ -12,7 +14,7 @@ cTransmission::InitGearRatios(void)
 	int i;
 	float velocityDiff;
 
-	memset(Gears, 0, sizeof(Gears));
+	sceClibMemset(Gears, 0, sizeof(Gears));
 
 	for(i = 1; i <= nNumberOfGears; i++){
 		pGearRatio0 = &Gears[i-1];

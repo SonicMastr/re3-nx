@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #define WITHWINDOWS
 #include "common.h"
 #include "crossplatform.h"
@@ -109,7 +111,7 @@ C_PcSave::PopulateSlotInfo()
 			CFileMgr::Read(file, (char*)&header, sizeof(header));
 			if (strncmp((char*)&header, TopLineEmptyFile, sizeof(TopLineEmptyFile)-1) != 0) {
 				Slots[i + 1] = SLOT_OK;
-				memcpy(SlotFileName[i], &header.FileName, sizeof(header.FileName));
+				sceClibMemcpy(SlotFileName[i], &header.FileName, sizeof(header.FileName));
 				
 				SlotFileName[i][24] = '\0';
 			}
@@ -118,7 +120,7 @@ C_PcSave::PopulateSlotInfo()
 		if (Slots[i + 1] == SLOT_OK) {
 			if (CheckDataNotCorrupt(i, savename)) {
 				SYSTEMTIME st;
-				memcpy(&st, &header.SaveDateTime, sizeof(SYSTEMTIME));
+				sceClibMemcpy(&st, &header.SaveDateTime, sizeof(SYSTEMTIME));
 				const char *month;
 				switch (st.wMonth)
 				{

@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 
@@ -41,7 +43,7 @@ GeometryListStreamRead1(RwStream *stream, rpGeometryList *geomlist)
 		geomlist->geometries = (RpGeometry**)RwMalloc(geomlist->numGeoms * sizeof(RpGeometry*));
 		if(geomlist->geometries == nil)
 			return nil;
-		memset(geomlist->geometries, 0, geomlist->numGeoms * sizeof(RpGeometry*));
+		sceClibMemset(geomlist->geometries, 0, geomlist->numGeoms * sizeof(RpGeometry*));
 	}else
 		geomlist->geometries = nil;
 

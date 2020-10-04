@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #define WITHWINDOWS
 #include "common.h"
 #include "crossplatform.h"
@@ -64,8 +66,8 @@ bool StillToFadeOut;
 uint32 TimeStartedCountingForFade;
 uint32 TimeToStayFadedBeforeFadeOut = 1750;
 
-#define ReadDataFromBufferPointer(buf, to) memcpy(&to, buf, sizeof(to)); buf += align4bytes(sizeof(to));
-#define WriteDataToBufferPointer(buf, from) memcpy(buf, &from, sizeof(from)); buf += align4bytes(sizeof(from));
+#define ReadDataFromBufferPointer(buf, to) sceClibMemcpy(&to, buf, sizeof(to)); buf += align4bytes(sizeof(to));
+#define WriteDataToBufferPointer(buf, from) sceClibMemcpy(buf, &from, sizeof(from)); buf += align4bytes(sizeof(from));
 
 #define LoadSaveDataBlock()\
 do {\
@@ -126,7 +128,7 @@ GenericSave(int file)
 		int len = UnicodeStrlen(lastMissionPassed);
 		if (len > ARRAY_SIZE(saveName)-1)
 			len = ARRAY_SIZE(saveName)-1;
-		memcpy(saveName, lastMissionPassed, sizeof(wchar) * len);
+		sceClibMemcpy(saveName, lastMissionPassed, sizeof(wchar) * len);
 #else
 		TextCopy(saveName, lastMissionPassed);
 		int len = UnicodeStrlen(saveName);
@@ -447,7 +449,7 @@ MakeSpaceForSizeInBufferPointer(uint8 *&presize, uint8 *&buf, uint8 *&postsize)
 void
 CopySizeAndPreparePointer(uint8 *&buf, uint8 *&postbuf, uint8 *&postbuf2, uint32 &unused, uint32 &size)
 {
-	memcpy(buf, &size, sizeof(size));
+	sceClibMemcpy(buf, &size, sizeof(size));
 	size = align4bytes(size);
 	postbuf2 += size;
 	postbuf = postbuf2;
@@ -521,7 +523,7 @@ CheckDataNotCorrupt(int32 slot, char *name)
 		}
 
 		if (blocknum == 0)
-			memcpy(&level, work_buff+4, sizeof(level));
+			sceClibMemcpy(&level, work_buff+4, sizeof(level));
 		blocknum++;
 	}
 	int32 _checkSum;

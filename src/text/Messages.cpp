@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "Messages.h"
@@ -455,7 +457,7 @@ CMessages::InsertPlayerControlKeysInString(wchar *str)
 
 	if (!str) return;
 	uint16 strSize = GetWideStringLength(str);
-	memset(keybuf, 0, 256*sizeof(wchar));
+	sceClibMemset(keybuf, 0, 256*sizeof(wchar));
 
 	wchar *_outstr = outstr;
 	for (i = 0; i < strSize;) {

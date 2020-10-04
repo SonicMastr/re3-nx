@@ -1,6 +1,9 @@
 #if defined RW_GL3 && !defined LIBRW_SDL2
 
 #define WITHWINDOWS
+
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #pragma warning( push )
@@ -31,6 +34,7 @@
 #include "AnimViewer.h"
 #include "Font.h"
 
+int _newlib_heap_size_user = 128 * 1024 * 1024;
 
 #define MAX_SUBSYSTEMS		(16)
 
@@ -629,7 +633,6 @@ psSelectDevice()
 	RwInt32				subSysNum;
 	RwInt32				AutoRenderer = 0;
 	
-
 	RwBool modeFound = FALSE;
 	
 	if ( !useDefault )
@@ -656,7 +659,7 @@ psSelectDevice()
 			GcurSel = FrontEndMenuManager.m_nPrefsSubsystem;
 #endif
 	}
-	
+
 	/* Set the driver to use the correct sub system */
 	if (!RwEngineSetSubSystem(GcurSel))
 	{
@@ -719,9 +722,11 @@ psSelectDevice()
 		   FrontEndMenuManager.m_nPrefsDepth == 0){
 			// Defaults if nothing specified
 			#if !defined(__SWITCH__)
-			const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+			/*const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 			FrontEndMenuManager.m_nPrefsWidth = mode->width;
-			FrontEndMenuManager.m_nPrefsHeight = mode->height;
+			FrontEndMenuManager.m_nPrefsHeight = mode->height;*/
+			FrontEndMenuManager.m_nPrefsWidth = 960;
+			FrontEndMenuManager.m_nPrefsHeight = 544;
 			#else
 			switch(appletGetOperationMode()){
 				default:
@@ -738,7 +743,7 @@ psSelectDevice()
 				}
 			}
 			#endif
-			FrontEndMenuManager.m_nPrefsDepth = 16;
+			FrontEndMenuManager.m_nPrefsDepth = 32;
 			FrontEndMenuManager.m_nPrefsWindowed = 0;
 		}
 
@@ -793,7 +798,6 @@ psSelectDevice()
 #ifndef PS2_MENU
 	FrontEndMenuManager.m_nCurrOption = 0;
 #endif
-	
 	/* Set up the video mode and set the apps window
 	* dimensions to match */
 	if (!RwEngineSetVideoMode(GcurSelVM))
@@ -833,7 +837,7 @@ psSelectDevice()
 		
 		PSGLOBAL(fullScreen) = !FrontEndMenuManager.m_nPrefsWindowed;
 #endif
-	
+
 	return TRUE;
 }
 
@@ -1957,7 +1961,7 @@ void CapturePad(RwInt32 padID)
 
 	if (ControlsManager.m_bFirstCapture == false)
 	{
-		memcpy(&ControlsManager.m_OldState, &ControlsManager.m_NewState, sizeof(ControlsManager.m_NewState));
+		sceClibMemcpy(&ControlsManager.m_OldState, &ControlsManager.m_NewState, sizeof(ControlsManager.m_NewState));
 	}
 
 	ControlsManager.m_NewState.buttons = (uint8*)buttons;
@@ -1966,14 +1970,14 @@ void CapturePad(RwInt32 padID)
 	ControlsManager.m_NewState.isGamepad = glfwJoystickIsGamepad(glfwPad);
 	if (ControlsManager.m_NewState.isGamepad) {
 		glfwGetGamepadState(glfwPad, &gamepadState);
-		memcpy(&ControlsManager.m_NewState.mappedButtons, gamepadState.buttons, sizeof(gamepadState.buttons));
+		sceClibMemcpy(&ControlsManager.m_NewState.mappedButtons, gamepadState.buttons, sizeof(gamepadState.buttons));
 		ControlsManager.m_NewState.mappedButtons[15] = gamepadState.axes[4] > -0.8f;
 		ControlsManager.m_NewState.mappedButtons[16] = gamepadState.axes[5] > -0.8f;
 	}
 	// TODO I'm not sure how to find/what to do with L2-R2, if joystick isn't registered in SDL database.
 
 	if (ControlsManager.m_bFirstCapture == true) {
-		memcpy(&ControlsManager.m_OldState, &ControlsManager.m_NewState, sizeof(ControlsManager.m_NewState));
+		sceClibMemcpy(&ControlsManager.m_OldState, &ControlsManager.m_NewState, sizeof(ControlsManager.m_NewState));
 		
 		ControlsManager.m_bFirstCapture = false;
 	}

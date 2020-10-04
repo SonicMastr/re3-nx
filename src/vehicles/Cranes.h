@@ -1,4 +1,6 @@
 #pragma once
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "World.h"
@@ -55,7 +57,7 @@ public:
 	bool m_bWasMilitaryCrane;
 	bool m_bIsTop;
 
-	void Init(void) { memset(this, 0, sizeof(*this)); }
+	void Init(void) { sceClibMemset(this, 0, sizeof(*this)); }
 	void Update(void);
 	bool RotateCarriedCarProperly(void);
 	void FindCarInSectorList(CPtrList* pList);

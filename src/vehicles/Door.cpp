@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "Vehicle.h"
@@ -5,7 +7,7 @@
 
 CDoor::CDoor(void)
 {
-	memset(this, 0, sizeof(*this));
+	sceClibMemset(this, 0, sizeof(*this));
 }
 
 void
@@ -118,7 +120,7 @@ CDoor::IsClosed(void)
 
 CTrainDoor::CTrainDoor(void)
 {
-	memset(this, 0, sizeof(*this));
+	sceClibMemset(this, 0, sizeof(*this));
 }
 
 void

@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "main.h"
@@ -70,7 +72,7 @@ const char VehicleNames[NUMHANDLINGS][14] = {
 
 cHandlingDataMgr::cHandlingDataMgr(void)
 {
-	memset(this, 0, sizeof(*this));
+	sceClibMemset(this, 0, sizeof(*this));
 }
 
 void

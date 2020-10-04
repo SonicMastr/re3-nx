@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "General.h"
@@ -17,7 +19,7 @@ CDamageManager::CDamageManager(void)
 void
 CDamageManager::ResetDamageStatus(void)
 {
-	memset(this, 0, sizeof(*this));
+	sceClibMemset(this, 0, sizeof(*this));
 }
 
 void

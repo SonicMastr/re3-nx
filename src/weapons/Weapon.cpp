@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include "Weapon.h"
@@ -2283,8 +2285,8 @@ CWeapon::ProcessLineOfSight(CVector const &point1, CVector const &point2, CColPo
 }
 
 #ifdef COMPATIBLE_SAVES
-#define CopyFromBuf(buf, data) memcpy(&data, buf, sizeof(data)); SkipSaveBuf(buf, sizeof(data));
-#define CopyToBuf(buf, data) memcpy(buf, &data, sizeof(data)); SkipSaveBuf(buf, sizeof(data));
+#define CopyFromBuf(buf, data) sceClibMemcpy(&data, buf, sizeof(data)); SkipSaveBuf(buf, sizeof(data));
+#define CopyToBuf(buf, data) sceClibMemcpy(buf, &data, sizeof(data)); SkipSaveBuf(buf, sizeof(data));
 void
 CWeapon::Save(uint8*& buf)
 {
