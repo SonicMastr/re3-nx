@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #ifdef CUSTOM_FRONTEND_OPTIONS
@@ -83,14 +85,14 @@ RemoveCustomFrontendOptions()
 					if (ogOptionId == -1) {
 						int k;
 						for (k = j; k < NUM_MENUROWS - 1; k++) {
-							memcpy(&aScreens[i].m_aEntries[k], &aScreens[i].m_aEntries[k + 1], sizeof(CMenuScreen::CMenuEntry));
+							sceClibMemcpy(&aScreens[i].m_aEntries[k], &aScreens[i].m_aEntries[k + 1], sizeof(CMenuScreen::CMenuEntry));
 						}
 						aScreens[i].m_aEntries[k].m_Action = MENUACTION_NOTHING;
 						aScreens[i].m_aEntries[k].m_SaveSlot = SAVESLOT_NONE;
 						aScreens[i].m_aEntries[k].m_EntryName[0] = '\0';
 						j--;
 					} else {
-						memcpy(&aScreens[i].m_aEntries[j], &frontendOptionReplacements[ogOptionId], sizeof(CMenuScreen::CMenuEntry));
+						sceClibMemcpy(&aScreens[i].m_aEntries[j], &frontendOptionReplacements[ogOptionId], sizeof(CMenuScreen::CMenuEntry));
 					}
 				}
 			}
@@ -159,7 +161,7 @@ int8 RegisterNewOption()
 	if (!optionOverwrite) {
 		if (aScreens[currentMenu].m_aEntries[curIdx].m_Action != MENUACTION_NOTHING) {
 			for (int i = numOptions - 1; i >= curIdx; i--) {
-				memcpy(&aScreens[currentMenu].m_aEntries[i + 1], &aScreens[currentMenu].m_aEntries[i], sizeof(CMenuScreen::CMenuEntry));
+				sceClibMemcpy(&aScreens[currentMenu].m_aEntries[i + 1], &aScreens[currentMenu].m_aEntries[i], sizeof(CMenuScreen::CMenuEntry));
 			}
 		}
 	}
@@ -172,7 +174,7 @@ int8 RegisterNewOption()
 		else if (numFrontendOptionReplacements % 5 == 1)
 			frontendOptionReplacements = (CMenuScreen::CMenuEntry*)realloc(frontendOptionReplacements, (numFrontendOptionReplacements + 4) * sizeof(CMenuScreen::CMenuEntry));
 
-		memcpy(&frontendOptionReplacements[numFrontendOptionReplacements - 1], &aScreens[currentMenu].m_aEntries[curIdx], sizeof(CMenuScreen::CMenuEntry));
+		sceClibMemcpy(&frontendOptionReplacements[numFrontendOptionReplacements - 1], &aScreens[currentMenu].m_aEntries[curIdx], sizeof(CMenuScreen::CMenuEntry));
 		customFrontendOptions[numCustomFrontendOptions - 1].ogOptionId = numFrontendOptionReplacements - 1;
 	} else {
 		customFrontendOptions[numCustomFrontendOptions - 1].ogOptionId = -1;
@@ -224,7 +226,7 @@ void FrontendOptionAddSelect(const wchar* leftText, const wchar** rightTexts, in
 	option.type = FEOPTION_SELECT;
 	TextCopy(option.leftText, leftText);
 	option.rightTexts = (wchar**)malloc(numRightTexts * sizeof(wchar*));
-	memcpy(option.rightTexts, rightTexts, numRightTexts * sizeof(wchar*));
+	sceClibMemcpy(option.rightTexts, rightTexts, numRightTexts * sizeof(wchar*));
 	option.numRightTexts = numRightTexts;
 	option.value = var;
 	option.displayedValue = *var;

@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 #ifdef DEBUGMENU
 #include "RwHelper.h"
@@ -154,7 +156,7 @@ struct Menu
 
 	void update(void);
 	void draw(void);
-	Menu(void){ memset(this, 0, sizeof(Menu)); }
+	Menu(void){ sceClibMemset(this, 0, sizeof(Menu)); }
 	~Menu(void);
 };
 extern Menu toplevel;
@@ -717,7 +719,7 @@ Menu::~Menu(void)
 		next = e->next;
 		delete e;
 	}
-	memset(this, 0, sizeof(Menu));
+	sceClibMemset(this, 0, sizeof(Menu));
 }
 
 Menu*

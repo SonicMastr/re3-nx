@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #ifdef RW_OPENGL
@@ -51,8 +53,8 @@ uploadSpecLights(void)
 		rw::V3d dir;
 		float power;
 	} dirs[1 + NUMEXTRADIRECTIONALS];
-	memset(colors, 0, sizeof(colors));
-	memset(dirs, 0, sizeof(dirs));
+	sceClibMemset(colors, 0, sizeof(colors));
+	sceClibMemset(dirs, 0, sizeof(dirs));
 	for(int i = 0; i < 1+NUMEXTRADIRECTIONALS; i++)
 		dirs[i].power = 1.0f;
 	float power = Power.Get();
