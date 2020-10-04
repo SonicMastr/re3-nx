@@ -1,3 +1,5 @@
+#include <psp2/kernel/clib.h>
+
 #include "common.h"
 
 #include <ctype.h>
@@ -62,7 +64,7 @@ CTheZones::Init(void)
 	NumberOfAudioZones = 0;
 
 	for(i = 0; i < NUMZONES; i++)
-		memset(&ZoneArray[i], 0, sizeof(CZone));
+		sceClibMemset(&ZoneArray[i], 0, sizeof(CZone));
 
 	CZoneInfo *zonei;
 	int x = 1000/6;
@@ -104,7 +106,7 @@ CTheZones::Init(void)
 	ZoneArray[0].level = LEVEL_GENERIC;
 
 	for(i = 0; i < NUMMAPZONES; i++){
-		memset(&MapZoneArray[i], 0, sizeof(CZone));
+		sceClibMemset(&MapZoneArray[i], 0, sizeof(CZone));
 		MapZoneArray[i].type = ZONE_MAPZONE;
 	}
 
@@ -365,7 +367,7 @@ int16
 CTheZones::FindZoneByLabelAndReturnIndex(Const char *name)
 {
 	char str[8];
-	memset(str, 0, 8);
+	sceClibMemset(str, 0, 8);
 	strncpy(str, name, 8);
 	for(FindIndex = 0; FindIndex < TotalNumberOfZones; FindIndex++)
 		if(strcmp(GetZone(FindIndex)->name, name) == 0)

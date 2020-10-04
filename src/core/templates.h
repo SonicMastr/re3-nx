@@ -1,5 +1,7 @@
 #pragma once
 
+#include <psp2/kernel/clib.h>
+
 template<typename T, int n>
 class CStore
 {
@@ -148,8 +150,8 @@ public:
 	}
 	uint32 GetMaxEntrySize() const { return sizeof(U); }
 	void CopyBack(uint8 *&flags, U *&entries){
-		memcpy(m_flags, flags, sizeof(uint8)*m_size);
-		memcpy(m_entries, entries, sizeof(U)*m_size);
+		sceClibMemcpy(m_flags, flags, sizeof(uint8)*m_size);
+		sceClibMemcpy(m_entries, entries, sizeof(U)*m_size);
 		debug("Size copied:%d (%d)\n", sizeof(U)*m_size, sizeof(Flags)*m_size);
 		m_allocPtr = 0;
 		ClearStorage(flags, entries);
@@ -158,8 +160,8 @@ public:
 	void Store(uint8 *&flags, U *&entries){
 		flags = (uint8*)malloc(sizeof(uint8)*m_size);
 		entries = (U*)malloc(sizeof(U)*m_size);
-		memcpy(flags, m_flags, sizeof(uint8)*m_size);
-		memcpy(entries, m_entries, sizeof(U)*m_size);
+		sceClibMemcpy(flags, m_flags, sizeof(uint8)*m_size);
+		sceClibMemcpy(entries, m_entries, sizeof(U)*m_size);
 		debug("Stored:%d (/%d)\n", GetNoOfUsedSpaces(), m_size); /* Assumed inlining */
 	}
 };

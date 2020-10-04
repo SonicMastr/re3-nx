@@ -10,6 +10,7 @@
 #include <time.h>
 #include <psp2/rtc.h>
 #include <psp2/kernel/processmgr.h>
+#include <psp2/kernel/clib.h>
 #include "vita_compat.h"
 
 #include <stdlib.h>
@@ -128,7 +129,7 @@ char *realpath(const char *name, char *resolved)
             dest = rpath + dest_offset;
          }
 
-         dest = memcpy(dest, start, end - start);
+         dest = sceClibMemcpy(dest, start, end - start);
          *dest = '\0';
       }
    }
