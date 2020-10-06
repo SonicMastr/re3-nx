@@ -31,6 +31,7 @@
 #include "AnimViewer.h"
 #include "Font.h"
 
+int _newlib_heap_size_user = 220 * 1024 * 1024;
 
 #define MAX_SUBSYSTEMS		(16)
 
@@ -718,27 +719,10 @@ psSelectDevice()
 		   FrontEndMenuManager.m_nPrefsHeight == 0 ||
 		   FrontEndMenuManager.m_nPrefsDepth == 0){
 			// Defaults if nothing specified
-			#if !defined(__SWITCH__)
 			const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 			FrontEndMenuManager.m_nPrefsWidth = mode->width;
 			FrontEndMenuManager.m_nPrefsHeight = mode->height;
-			#else
-			switch(appletGetOperationMode()){
-				default:
-				case AppletOperationMode_Handheld: {
-					FrontEndMenuManager.m_nPrefsWidth = 1280;
-					FrontEndMenuManager.m_nPrefsHeight = 720;
-					break;
-				}
-
-				case AppletOperationMode_Docked: {
-					FrontEndMenuManager.m_nPrefsWidth = 1920;
-					FrontEndMenuManager.m_nPrefsHeight = 1080;
-					break;
-				}
-			}
-			#endif
-			FrontEndMenuManager.m_nPrefsDepth = 16;
+			FrontEndMenuManager.m_nPrefsDepth = 32;
 			FrontEndMenuManager.m_nPrefsWindowed = 0;
 		}
 
@@ -1436,6 +1420,29 @@ WinMain(HINSTANCE instance,
 #endif
 
 #else
+extern "C"
+{
+    unsigned int sleep(unsigned int seconds)
+    {
+        sceKernelDelayThread(seconds*1000*1000);
+        return 0;
+    }
+
+    int usleep(useconds_t usec)
+    {
+        sceKernelDelayThread(usec);
+        return 0;
+    }
+
+    void __sinit(struct _reent *);
+}
+
+__attribute__((constructor(101)))
+void pthread_setup(void) 
+{
+    pthread_init();
+    __sinit(_REENT);
+}
 int main(int argc, char *argv[])
 {
 #endif
@@ -1560,7 +1567,6 @@ int main(int argc, char *argv[])
 	
 	SystemParametersInfo(SPI_SETSTICKYKEYS, sizeof(STICKYKEYS), &NewStickyKeys, SPIF_SENDCHANGE);
 #endif
-
 	{
 		CFileMgr::SetDirMyDocuments();
 		

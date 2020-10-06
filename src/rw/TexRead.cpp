@@ -42,7 +42,6 @@ RwTextureGtaStreamRead(RwStream *stream)
 
 	if(!READNATIVE(stream, &tex, size))
 		return nil;
-
 	if (gGameState == GS_INIT_PLAYING_GAME) {
 		texLoadTime = (texNumLoaded * texLoadTime + (float)CTimer::GetCurrentTimeInCycles() / (float)CTimer::GetCyclesPerMillisecond() - preloadTime) / (float)(texNumLoaded+1);
 		texNumLoaded++;
@@ -75,6 +74,7 @@ RwTexDictionaryGtaStreamRead(RwStream *stream)
 		return nil;
 
 	while(numTextures--){
+		printf("Number Textures %d\n", numTextures);
 		tex = RwTextureGtaStreamRead(stream);
 		if(tex == nil){
 			RwTexDictionaryForAllTextures(texDict, destroyTexture, nil);

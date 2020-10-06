@@ -127,9 +127,12 @@ bool
 CTxdStore::LoadTxd(int slot, RwStream *stream)
 {
 	TxdDef *def = GetSlot(slot);
+	printf("Got Slot\n");
 
 	if(RwStreamFindChunk(stream, rwID_TEXDICTIONARY, nil, nil)){
+		printf("Found chunk\n");
 		def->texDict = RwTexDictionaryGtaStreamRead(stream);
+		printf("Got TexDicStream\n");
 		return def->texDict != nil;
 	}
 	printf("Failed to load TXD\n");
@@ -139,6 +142,11 @@ CTxdStore::LoadTxd(int slot, RwStream *stream)
 bool
 CTxdStore::LoadTxd(int slot, const char *filename)
 {
+#if defined(VITA)
+	char vitaFilename[256];
+	snprintf(vitaFilename, 256, "app0:%s", filename);
+	filename = vitaFilename;
+#endif
 	RwStream *stream;
 	bool ret;
 
@@ -147,7 +155,9 @@ CTxdStore::LoadTxd(int slot, const char *filename)
 	do
 		stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, filename);
 	while(stream == nil);
+	printf("Got stream\n");
 	ret = LoadTxd(slot, stream);
+	printf("Loaded TXT for sure now\n");
 	RwStreamClose(stream, nil);
 	return ret;
 }

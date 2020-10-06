@@ -162,8 +162,9 @@ add_providers()
 	SampleManager.SetNum3DProvidersAvailable(0);
 	
 	ALDeviceList *pDeviceList = NULL;
+	printf("Getting Device List\n");
 	pDeviceList = new ALDeviceList();
-
+	printf("Got Device List\n");
 	if ((pDeviceList) && (pDeviceList->GetNumDevices()))
 	{
 		const int devNumber = Min(pDeviceList->GetNumDevices(), MAXPROVIDERS);
@@ -583,13 +584,13 @@ cSampleManager::Initialise(void)
 	
 	{
 		add_providers();
-		
+		printf("Initializing Sample Banks\n");
 		if ( !InitialiseSampleBanks() )
 		{
 			Terminate();
 			return false;
 		}
-		
+		printf("Initialized Sample Banks\n");
 		nSampleBankMemoryStartAddress[SFX_BANK_0] = (uintptr)malloc(nSampleBankSize[SFX_BANK_0]);
 		ASSERT(nSampleBankMemoryStartAddress[SFX_BANK_0] != 0);
 		

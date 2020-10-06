@@ -312,7 +312,7 @@ RsRwInitialize(void *displayID)
 	/*
 	 * Start RenderWare...
 	 */
-	 
+	
 	if (!RwEngineInit(psGetMemoryFunctions(), 0, rsRESOURCESDEFAULTARENASIZE))
 	{
 		return (FALSE);
@@ -348,23 +348,28 @@ RsRwInitialize(void *displayID)
 
 	if (!RwEngineOpen(&openParams))
 	{
+		printf("Failed 1\n");
 		RwEngineTerm();
 		return (FALSE);
 	}
 	
 	if (RsEventHandler(rsSELECTDEVICE, displayID) == rsEVENTERROR)
 	{
+		printf("Failed 2\n");
 		RwEngineClose();
 		RwEngineTerm();
 		return (FALSE);
 	}
-	
+
 	if (!RwEngineStart())
 	{
+		printf("Failed 3\n");
 		RwEngineClose();
 		RwEngineTerm();
 		return (FALSE);
 	}
+
+	printf("We got here at least\n");
 
 	/*
 	 * Register loaders for an image with a particular file extension...

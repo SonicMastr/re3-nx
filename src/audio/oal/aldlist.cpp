@@ -30,6 +30,8 @@
 #define _strdup strdup
 #endif
 
+#include <cstdio>
+
 #ifdef AUDIO_OAL
 /* 
  * Init call
@@ -46,8 +48,11 @@ ALDeviceList::ALDeviceList()
 
 	defaultDeviceIndex = 0;
 
+	printf("Find Extension\n");
 	if (alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT")) {
+		printf("Getting String\n");
 		devices = (char *)alcGetString(NULL, ALC_DEVICE_SPECIFIER);
+		printf("Getting String\n");
 		defaultDeviceName = (char *)alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
 		
 		index = 0;
@@ -56,6 +61,7 @@ ALDeviceList::ALDeviceList()
 			if (strcmp(defaultDeviceName, devices) == 0) {
 				defaultDeviceIndex = index;
 			}
+			printf("Opening Device\n");
 			ALCdevice *device = alcOpenDevice(devices);
 			if (device) {
 				ALCcontext *context = alcCreateContext(device, NULL);

@@ -25,6 +25,7 @@
 #endif
 
 #ifdef VITA
+#include <psp2/kernel/modulemgr.h>
 #include "vita_compat.h"
 #endif
 

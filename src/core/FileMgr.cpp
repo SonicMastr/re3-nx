@@ -208,6 +208,9 @@ CFileMgr::Initialise(void)
 {
 	_getcwd(ms_rootDirName, 128);
 	strcat(ms_rootDirName, "\\");
+#ifdef VITA
+	strcpy(ms_dirName, ms_rootDirName);
+#endif
 }
 
 void
@@ -249,6 +252,11 @@ CFileMgr::SetDirMyDocuments(void)
 size_t
 CFileMgr::LoadFile(const char *file, uint8 *buf, int unused, const char *mode)
 {
+#if defined(VITA)
+	char vitaFilename[256];
+	snprintf(vitaFilename, 256, "%s%s", ms_dirName, file);
+	file = vitaFilename;
+#endif
 	int fd;
 	size_t n, len;
 
@@ -270,6 +278,11 @@ CFileMgr::LoadFile(const char *file, uint8 *buf, int unused, const char *mode)
 int
 CFileMgr::OpenFile(const char *file, const char *mode)
 {
+#if defined(VITA)
+	char vitaFilename[256];
+	snprintf(vitaFilename, 256, "%s%s", ms_dirName, file);
+	file = vitaFilename;
+#endif
 	return myfopen(file, mode);
 }
 

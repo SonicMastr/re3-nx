@@ -298,14 +298,13 @@ static rw::Raster*
 ConvertTexRaster(rw::Raster *ras)
 {
 	using namespace rw;
-
+	printf("Raster Platform %d/Platform %d\n", ras->platform,rw::platform);
 	if(ras->platform == rw::platform)
 		return ras;
 	// compatible platforms
 	if(ras->platform == PLATFORM_D3D8 && rw::platform == PLATFORM_D3D9 ||
 	   ras->platform == PLATFORM_D3D9 && rw::platform == PLATFORM_D3D8)
 		return ras;
-
 	Image *img = ras->toImage();
 	ras->destroy();
 	img->unpalettize();
@@ -873,6 +872,11 @@ RwImage *
 RtBMPImageRead(const RwChar *imageName)
 {
 #ifndef _WIN32
+#if defined(VITA)
+	char vitaFilename[256];
+	snprintf(vitaFilename, 256, "app0:%s", imageName);
+	imageName = vitaFilename;
+#endif
 	RwImage *image;
 	char *r = casepath(imageName);
 	if (r) {

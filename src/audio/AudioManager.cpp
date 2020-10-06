@@ -55,9 +55,12 @@ cAudioManager::Initialise()
 {
 	if (!m_bIsInitialised) {
 		PreInitialiseGameSpecificSetup();
+		printf("Initializing Sample Manager\n");
 		m_bIsInitialised = SampleManager.Initialise();
+		printf("Initialized Sample Manager\n");
 		if (m_bIsInitialised) {
 			m_nActiveSamples = SampleManager.GetMaximumSupportedChannels();
+			printf("Got Channels\n");
 			if (m_nActiveSamples <= 1) {
 				Terminate();
 			} else {

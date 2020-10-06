@@ -404,6 +404,7 @@ Initialise3D(void *param)
 		DebugMenuInit();
 		DebugMenuPopulate();
 #endif // !DEBUGMENU
+		printf("Starting renderware\n");
 		bool ret = CGame::InitialiseRenderWare();
 #ifdef EXTENDED_PIPELINES
 		CustomPipes::CustomPipeInit();	// need Scene.world for this
@@ -451,7 +452,13 @@ LoadSplash(const char *name)
 	// if texture is found, splash was already set up below
 
 	if(tex == nil){
+#if defined(VITA)
+		char vitaFilename[256];
+		snprintf(vitaFilename, 256, "TXD\\%s", name);
+		name = vitaFilename;
+#else
 		CFileMgr::SetDir("TXD\\");
+#endif
 		sprintf(filename, "%s.txd", name);
 		if(splash.m_pTexture)
 			splash.Delete();

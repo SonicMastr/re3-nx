@@ -26,6 +26,11 @@ void GetLocalTime_CP(SYSTEMTIME *out) {
 // Compatible with Linux/POSIX and MinGW on Windows
 #ifndef _WIN32
 HANDLE FindFirstFile(const char* pathname, WIN32_FIND_DATA* firstfile) {
+#if defined(VITA)
+	char vitaFilename[256];
+	snprintf(vitaFilename, 256, "app0:%s", pathname);
+	pathname = vitaFilename;
+#endif
 	char newpathname[32];
 	strncpy(newpathname, pathname, 32);
 	char* path = strtok(newpathname, "\\*");
@@ -39,7 +44,7 @@ HANDLE FindFirstFile(const char* pathname, WIN32_FIND_DATA* firstfile) {
 
 	HANDLE d;
 	if ((d = (HANDLE)opendir(path)) == NULL || !FindNextFile(d, firstfile))
-		return NULL;
+        return NULL;
 
 	return d;
 }

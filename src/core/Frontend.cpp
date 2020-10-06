@@ -3307,13 +3307,17 @@ CMenuManager::LoadAllTextures()
 
 	printf("LOAD frontend\n");
 	CTxdStore::LoadTxd(frontendTxdSlot, "MODELS/FRONTEND.TXD");
+	printf("Loaded frontnd\n");
 	CTxdStore::AddRef(frontendTxdSlot);
+	printf("Added Reference\n");
 	CTxdStore::SetCurrentTxd(frontendTxdSlot);
+	printf("Before Patch\n");
 #ifndef GTA3_1_1_PATCH
 	CStreaming::IHaveUsedStreamingMemory();
+	printf("Streaming Memory\n");
 	CTimer::Update();
 #endif
-
+	printf("Updated\n");
 	for (int i = 0; i < ARRAY_SIZE(FrontendFilenames); i++) {
 		m_aFrontEndSprites[i].SetTexture(FrontendFilenames[i][0], FrontendFilenames[i][1]);
 		m_aFrontEndSprites[i].SetAddressing(rwTEXTUREADDRESSBORDER);
