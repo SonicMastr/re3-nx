@@ -28,7 +28,7 @@ CFLAGS	:=	-g -Wl,-q -ffunction-sections -fpermissive -fno-lto\
 CFLAGS	+=	$(INCLUDE) -DVITA -D__VITA__ -DMASTER -DFINAL -DLIBRW -DRW_GLES2 -DRW_GL3 -DGLFW_INCLUDE_ES2 -DAUDIO_OAL -DNO_MOVIES#-DLIBRW_GLAD
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-threadsafe-statics
 LDFLAGS	=	-g $(ARCH) -Wl,-Map,$(notdir $*.map)
-LIBS	:=  -lrw -lglfw3 -lpib -lopenal -lSDL2 -lvita2d -lSceDisplayUser_stub -lSceDisplay_stub -lSceCommonDialog_stub -llibScePiglet_stub -lSceShaccCg_stub -ltaihen_stub -lSceLibKernel_stub -lSceThreadmgr_stub \
+LIBS	:=  -lrw -lglfw3 -lpib -lopenal -lSDL2 -lvita2d -lSceDisplayUser_stub -lSceDisplay_stub -lSceCommonDialog_stub -lSceLibKernel_stub -lSceThreadmgr_stub \
 				-lSceModulemgr_stub -lSceSysmodule_stub -lSceIofilemgr_stub -lSceGxm_stub \
 				-lSceCtrl_stub -lSceHid_stub -lSceAudio_stub -lSceTouch_stub -lm -lpthread -lmpg123
 
