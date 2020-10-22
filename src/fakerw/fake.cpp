@@ -872,11 +872,6 @@ RwImage *
 RtBMPImageRead(const RwChar *imageName)
 {
 #ifndef _WIN32
-#if defined(VITA)
-	char vitaFilename[256];
-	snprintf(vitaFilename, 256, "app0:%s", imageName);
-	imageName = vitaFilename;
-#endif
 	RwImage *image;
 	char *r = casepath(imageName);
 	if (r) {

@@ -79,9 +79,9 @@ enum eGameState
     GS_FRONTEND,
     GS_INIT_PLAYING_GAME,
     GS_PLAYING_GAME,
-#ifndef MASTER
+//#ifndef MASTER
     GS_ANIMVIEWER,
-#endif
+//#endif
 };
 extern RwUInt32 gGameState;
 

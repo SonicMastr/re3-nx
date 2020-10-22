@@ -24,7 +24,7 @@
 
 #ifndef AUDIO_OPUS
 
-#ifndef VITA // 
+#ifndef VITA
 class CSndFile : public IDecoder
 {
 	SNDFILE *m_pfSound;

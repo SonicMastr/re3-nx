@@ -187,16 +187,17 @@ GetGTA3ImgSize(void)
     struct stat statbuf;
 
     char path[PATH_MAX];
-    realpath(gImgNames[0], path);
+    // realpath(gImgNames[0], path);
     if (stat(path, &statbuf) == -1) {
 		// Try case-insensitivity
 		char* real = casepath(gImgNames[0], false);
 		if (real)
 		{
-			realpath(real, path);
-			free(real);
-    		if (stat(path, &statbuf) != -1)
+			if (stat(real, &statbuf) != -1) {
+				free(real);
 				goto ok;
+			}
+			free(real);
 		}
 
         CDTRACE("can't get size of gta3.img");

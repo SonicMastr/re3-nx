@@ -17,7 +17,7 @@
 
 int _vita_getcwd(char *buf, size_t size)
 {
-    const char *cwd = "app0:";
+    const char *cwd = "ux0:data/RE3";
 
     if (strlen(cwd)+1 > size)
     {

@@ -31,8 +31,6 @@
 #include "AnimViewer.h"
 #include "Font.h"
 
-int _newlib_heap_size_user = 220 * 1024 * 1024;
-
 #define MAX_SUBSYSTEMS		(16)
 
 
@@ -1420,29 +1418,7 @@ WinMain(HINSTANCE instance,
 #endif
 
 #else
-extern "C"
-{
-    unsigned int sleep(unsigned int seconds)
-    {
-        sceKernelDelayThread(seconds*1000*1000);
-        return 0;
-    }
 
-    int usleep(useconds_t usec)
-    {
-        sceKernelDelayThread(usec);
-        return 0;
-    }
-
-    void __sinit(struct _reent *);
-}
-
-__attribute__((constructor(101)))
-void pthread_setup(void) 
-{
-    pthread_init();
-    __sinit(_REENT);
-}
 int main(int argc, char *argv[])
 {
 #endif
@@ -1714,8 +1690,8 @@ int main(int argc, char *argv[])
 #ifndef PS2_MENU
 					case GS_FRONTEND:
 					{
-						if(!glfwGetWindowAttrib(PSGLOBAL(window), GLFW_ICONIFIED))
-							RsEventHandler(rsFRONTENDIDLE, nil);
+						//if(!glfwGetWindowAttrib(PSGLOBAL(window), GLFW_ICONIFIED))
+							//RsEventHandler(rsFRONTENDIDLE, nil);
 
 #ifdef PS2_MENU
 						if ( !FrontEndMenuManager.m_bMenuActive || TheMemoryCard.m_bWantToLoad )

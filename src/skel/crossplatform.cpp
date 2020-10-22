@@ -26,11 +26,6 @@ void GetLocalTime_CP(SYSTEMTIME *out) {
 // Compatible with Linux/POSIX and MinGW on Windows
 #ifndef _WIN32
 HANDLE FindFirstFile(const char* pathname, WIN32_FIND_DATA* firstfile) {
-#if defined(VITA)
-	char vitaFilename[256];
-	snprintf(vitaFilename, 256, "app0:%s", pathname);
-	pathname = vitaFilename;
-#endif
 	char newpathname[32];
 	strncpy(newpathname, pathname, 32);
 	char* path = strtok(newpathname, "\\*");
@@ -137,115 +132,24 @@ FILE* _fcaseopen(char const* filename, char const* mode)
 // Returned string should freed manually (if exists)
 char* casepath(char const* path, bool checkPathFirst)
 {
-    if (checkPathFirst && access(path, F_OK) != -1) {
-        // File path is correct
-        return nil;
-    }
-
     size_t l = strlen(path);
-    char* p = (char*)alloca(l + 1);
-    char* out = (char*)malloc(l + 3); // for extra ./
-    strcpy(p, path);
+	char data_path[512];
+	_vita_getcwd(data_path, sizeof(data_path));
+	char* out = (char*)malloc(l + strlen(data_path) + 2);
 
-    // my addon: linux doesn't handle filenames with spaces at the end nicely
-    p = trim(p);
+	if (strncmp(path, "ux0:", 4) == 0) {
+		strcpy(out, path);
+	} else {
+		sprintf(out, "%s/%s", data_path, path);
+	}
 
-    size_t rl = 0;
-
-    DIR* d;
-
-    char* c;
-    
-    #ifdef VITA
-    if( (c = strstr(p, ":/")) != NULL) // support for switch mounted device names
-    {
-        size_t deviceNameOffset = c - p + 3;
-        char* deviceNamePath = (char*)alloca(deviceNameOffset + 1);
-        strlcpy(deviceNamePath, p, deviceNameOffset);
-        deviceNamePath[deviceNameOffset] = 0;
-        d = opendir(deviceNamePath);
-        p = c + 1;
-    }
-    else
-    #endif
-    if (p[0] == '/' || p[0] == '\\')
-    {
-        d = opendir("/");
-    }
-    else
-    {
-        d = opendir(".");
-        out[0] = '.';
-        out[1] = 0;
-        rl = 1;
-    }
-
-    bool cantProceed = false; // just convert slashes in what's left in string, not case sensitivity
-    bool mayBeTrailingSlash = false;
-
-    while (c = strsep(&p, "/\\"))
-    {
-        // May be trailing slash(allow), slash at the start(avoid), or multiple slashes(avoid)
-        if (*c == '\0')
-        {
-            mayBeTrailingSlash = true;
-            continue;
-        } else {
-            mayBeTrailingSlash = false;
-        }
-
-        out[rl] = '/';
-        rl += 1;
-        out[rl] = 0;
-
-        if (cantProceed)
-        {
-            strcpy(out + rl, c);
-            rl += strlen(c);
-            continue;
-        }
-
-        struct dirent* e;
-        while (e = readdir(d))
-        {
-            if (strcasecmp(c, e->d_name) == 0)
-            {
-                strcpy(out + rl, e->d_name);
-                int reportedLen = (int)strlen(e->d_name);
-                rl += reportedLen;
-                assert(reportedLen == strlen(c) && "casepath: This is not good at all");
-
-                closedir(d);
-                d = opendir(out);
-
-                // Either it wasn't a folder, or permission error, I/O error etc.
-                if (!d) {
-                    cantProceed = true;
-                }
-
-                break;
-            }
-        }
-
-        if (!e)
-        {
-            printf("casepath couldn't find dir/file \"%s\", full path was %s\n", c, path);
-            // No match, add original name and continue converting further slashes.
-            strcpy(out + rl, c);
-            rl += strlen(c);
-            cantProceed = true;
-        }
-    }
-
-    if (d) closedir(d);
-    if (mayBeTrailingSlash) {
-        out[rl] = '/';  rl += 1;
-        out[rl] = '\0';
-    }
-
-    if (rl > l + 2) {
-        printf("\n\ncasepath: Corrected path length is longer then original+2:\n\tOriginal: %s (%d chars)\n\tCorrected: %s (%d chars)\n\n", path, l, out, rl);
-    }
+    l = strlen(out);
+		for (int i = l-1; i >= 0; i--) {
+			if (out[i] == '\\' || out[i] == '/' || out[i] == ' ')
+				out[i] = '\0';
+			else
+				break;
+		}
     return out;
 }
 #endif

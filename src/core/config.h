@@ -184,6 +184,7 @@ enum Config {
 
 #ifdef FINAL
 	// in all games
+#	define NO_MOVIES	// disable intro videos
 #	define USE_MY_DOCUMENTS	// use my documents directory for user files
 #else
 	// not in any game

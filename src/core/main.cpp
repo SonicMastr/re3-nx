@@ -1235,7 +1235,6 @@ FrontendIdle(void)
 	CFont::InitPerFrame();
 	CPad::UpdatePads();
 	FrontEndMenuManager.Process();
-
 	if(RsGlobal.quit)
 		return;
 
@@ -1249,6 +1248,7 @@ FrontendIdle(void)
 	if(!RsCameraBeginUpdate(Scene.camera))
 		return;
 
+	printf("I'm not dead, bitch\n");
 	DefinedState(); // seems redundant, but breaks resolution change.
 	RenderMenus();
 	DoFade();
