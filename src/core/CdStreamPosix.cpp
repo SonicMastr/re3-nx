@@ -436,7 +436,7 @@ void *CdStreamThread(void *param)
 
 		pChannel->nSectorsToRead = 0;
 
-		if ( pChannel->bLocked && gCdStreamThreadStatus != 2)
+		if ( pChannel->bLocked )
 		{
 			sem_post(&pChannel->pDoneSemaphore);
 		}
@@ -454,7 +454,7 @@ void *CdStreamThread(void *param)
     sem_destroy(&gpReadInfo[channel].pDoneSemaphore);
 #endif
     free(gpReadInfo);
-	return 0;
+	pthread_exit(nil);
 }
 
 bool

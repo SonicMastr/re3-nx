@@ -25,7 +25,7 @@ AR      = $(PREFIX)-gcc-ar
 ARCH	:=	-mtune=cortex-a9 -mfpu=neon
 CFLAGS	:=	-g -Wl,-q -ffunction-sections -fpermissive -fno-lto\
 			$(ARCH) $(DEFINES)
-CFLAGS	+=	$(INCLUDE) -DVITA -D__VITA__ -DMASTER -DFINAL -DLIBRW -DRW_GLES2 -DRW_GL3 -DGLFW_INCLUDE_ES2 -DAUDIO_OAL#-DLIBRW_GLAD
+CFLAGS	+=	$(INCLUDE) -DVITA -D__VITA__ -DMASTER -DFINAL -DLIBRW -DRW_GLES2 -DRW_GL3 -DGLFW_INCLUDE_ES2 -DAUDIO_OAL -DONE_THREAD_PER_CHANNEL#-DLIBRW_GLAD
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-threadsafe-statics
 LDFLAGS	=	-g $(ARCH) -Wl,-Map,$(notdir $*.map)
 LIBS	:=  -lrw -lglfw3 -lpib -lopenal -lSDL2 -lvita2d -lSceDisplayUser_stub -lSceDisplay_stub -lSceCommonDialog_stub -lSceLibKernel_stub -lSceThreadmgr_stub \
@@ -43,7 +43,7 @@ eboot.bin: $(TARGET).velf
 	dolce-make-fself -c $< $@
 
 %.velf: %.elf
-	dolce-elf-create -h 128194304 $< $@
+	dolce-elf-create -h 4194304 $< $@
 
 $(TARGET).elf: $(OBJS)
 	$(CXX) $(CXXFLAGS) $^ $(LIBS) -o $@
