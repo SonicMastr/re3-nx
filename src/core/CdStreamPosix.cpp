@@ -45,9 +45,9 @@ struct CdReadInfo
 #ifdef ONE_THREAD_PER_CHANNEL
 	int8 nThreadStatus; // 0: created 1:initalized 2:abort now
     SceUID pChannelThread;
-    sem_t pStartSemaphore;
+    SceUID pStartSemaphore;
 #endif
-	sem_t pDoneSemaphore; // used for CdStreamSync
+	SceUID pDoneSemaphore; // used for CdStreamSync
 	int32 hFile;
 };
 
@@ -100,18 +100,18 @@ CdStreamInitThread(void)
 	{
 		for ( int32 i = 0; i < gNumChannels; i++ )
 		{
-		    status = sem_init(&gpReadInfo[i].pDoneSemaphore, 0, 0);
+			gpReadInfo[i].pDoneSemaphore = sceKernelCreateSema("CdStream_sem", SCE_KERNEL_SEMA_ATTR_TH_FIFO, 0, 1, NULL);
 
-			if (status == -1)
+			if (gpReadInfo[i].pDoneSemaphore < 0)
 			{
 				CDTRACE("failed to create sync semaphore");
 				ASSERT(0);
 				return;
 			}
 #ifdef ONE_THREAD_PER_CHANNEL
-		    status = sem_init(&gpReadInfo[i].pStartSemaphore, 0, 0);
+			gpReadInfo[i].pStartSemaphore = sceKernelCreateSema("CdStream_sem", SCE_KERNEL_SEMA_ATTR_TH_FIFO, 0, 1, NULL);
 
-			if (status == -1)
+			if (gpReadInfo[i].pStartSemaphore < 0)
 			{
 				CDTRACE("failed to create start semaphore");
 				ASSERT(0);
@@ -214,7 +214,7 @@ CdStreamShutdown(void)
 #ifdef ONE_THREAD_PER_CHANNEL
     for ( int32 i = 0; i < gNumChannels; i++ ) {
         gpReadInfo[i].nThreadStatus = 2;
-        sem_post(&gpReadInfo[i].pStartSemaphore);
+		sceKernelSignalSema(gpReadInfo[i].pStartSemaphore, 1);
     }
 #endif
 }
@@ -251,7 +251,7 @@ CdStreamRead(int32 channel, void *buffer, uint32 offset, uint32 size)
     if ( sem_post(&gCdStreamSema) != 0 )
         printf("Signal Sema Error\n");
 #else
-    if ( sem_post(&gpReadInfo[channel].pStartSemaphore) != 0 )
+    if (sceKernelSignalSema(gpReadInfo[channel].pStartSemaphore, 1) != 0 )
         printf("Signal Sema Error\n");
 #endif
 
@@ -327,7 +327,7 @@ CdStreamSync(int32 channel)
     {
         pChannel->bLocked = true;
 
-        sem_wait(&pChannel->pDoneSemaphore);
+		sceKernelWaitSema(pChannel->pDoneSemaphore, 1, NULL);
     }
 
     pChannel->bReading = false;
@@ -378,12 +378,12 @@ int *CdStreamThread(SceSize args, void *param)
 
 #ifndef ONE_THREAD_PER_CHANNEL
 	while (gCdStreamThreadStatus != 2) {
-		sem_wait(&gCdStreamSema);
+		sem_wait_nocancel(&gCdStreamSema);
 		int32 channel = GetFirstInQueue(&gChannelRequestQ);
 #else
 	int channel = *((int*)param);
 	while (gpReadInfo[channel].nThreadStatus != 2) {
-		sem_wait(&gpReadInfo[channel].pStartSemaphore);
+		sceKernelWaitSema(gpReadInfo[channel].pStartSemaphore, 1, NULL);
 #endif
 		ASSERT(channel < gNumChannels);
 
@@ -433,7 +433,7 @@ int *CdStreamThread(SceSize args, void *param)
 
 		if (pChannel->bLocked)
 		{
-			sem_post(&pChannel->pDoneSemaphore);
+			sceKernelSignalSema(pChannel->pDoneSemaphore, 1);
 		}
 		pChannel->bReading = false;
 		}
@@ -445,8 +445,8 @@ int *CdStreamThread(SceSize args, void *param)
 	sem_destroy(&gCdStreamSema);
 	free(gChannelRequestQ.items);
 #else
-	sem_destroy(&gpReadInfo[channel].pStartSemaphore);
-	sem_destroy(&gpReadInfo[channel].pDoneSemaphore);
+	sceKernelDeleteSema(gpReadInfo[channel].pStartSemaphore);
+	sceKernelDeleteSema(gpReadInfo[channel].pDoneSemaphore);
 #endif
 	free(gpReadInfo);
 	return sceKernelExitDeleteThread(0);
