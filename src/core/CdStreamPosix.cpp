@@ -17,6 +17,8 @@
 #ifndef VITA
 #include <sys/syscall.h>
 #else
+#include <psp2/kernel/iofilemgr.h>
+#include <psp2/kernel/threadmgr.h>
 // no signals in switch
 #define pthread_kill(threadid, signal) pthread_cancel(threadid)
 #endif
@@ -28,7 +30,7 @@
 #define CDDEBUG(f, ...)   debug ("%s: " f "\n", "cdvd_stream", ## __VA_ARGS__)
 #define CDTRACE(f, ...)   printf("%s: " f "\n", "cdvd_stream", ## __VA_ARGS__)
 
-// #define ONE_THREAD_PER_CHANNEL // Don't use if you're not on SSD/Flash. (Also you may want to benefit from this via using all channels in Streaming.cpp)
+#define ONE_THREAD_PER_CHANNEL // Don't use if you're not on SSD/Flash. (Also you may want to benefit from this via using all channels in Streaming.cpp)
 
 bool flushStream[MAX_CDCHANNELS];
 
@@ -42,7 +44,7 @@ struct CdReadInfo
 	int32 nStatus;
 #ifdef ONE_THREAD_PER_CHANNEL
 	int8 nThreadStatus; // 0: created 1:initalized 2:abort now
-    pthread_t pChannelThread;
+    SceUID pChannelThread;
     sem_t pStartSemaphore;
 #endif
 	sem_t pDoneSemaphore; // used for CdStreamSync
@@ -70,7 +72,7 @@ int32 lastPosnRead;
 
 int _gdwCdStreamFlags;
 
-void *CdStreamThread(void* channelId);
+int *CdStreamThread(SceSize args, void *param);
 
 void
 CdStreamInitThread(void)
@@ -118,9 +120,10 @@ CdStreamInitThread(void)
             gpReadInfo[i].nThreadStatus = 0;
 			int *channelI = (int*)malloc(sizeof(int));
 			*channelI = i;
-            status = pthread_create(&gpReadInfo[i].pChannelThread, NULL, CdStreamThread, (void*)channelI);
+			gpReadInfo[i].pChannelThread = sceKernelCreateThread("CdStream_thread", CdStreamThread, 100, 0x1000, 0, SCE_KERNEL_CPU_MASK_USER_0, NULL);
+			status = sceKernelStartThread(gpReadInfo[i].pChannelThread, 4, (void*)channelI);
 
-			if (status == -1)
+			if (status < 0)
 			{
 				CDTRACE("failed to create sync thread");
 				ASSERT(0);
@@ -184,28 +187,18 @@ uint32
 GetGTA3ImgSize(void)
 {
 	ASSERT( gImgFiles[0] > 0 );
-    struct stat statbuf;
+    struct SceIoStat statbuf;
 
-    char path[PATH_MAX];
-    // realpath(gImgNames[0], path);
-    if (stat(path, &statbuf) == -1) {
-		// Try case-insensitivity
-		char* real = casepath(gImgNames[0], false);
-		if (real)
-		{
-			if (stat(real, &statbuf) != -1) {
-				free(real);
-				goto ok;
-			}
-			free(real);
-		}
-
+	char* real = casepath(gImgNames[0], false);
+	int ret = sceIoGetstat(real, &statbuf);
+	free(real);
+    if (ret < 0) {
         CDTRACE("can't get size of gta3.img");
         ASSERT(0);
         return 0;
     }
 ok:
-	return statbuf.st_size;
+	return (uint32)statbuf.st_size;
 }
 
 void
@@ -315,7 +308,8 @@ CdStreamSync(int32 channel)
 	if (flushStream[channel]) {
 #ifdef ONE_THREAD_PER_CHANNEL
 		pChannel->nSectorsToRead = 0;
-		pthread_kill(gpReadInfo[channel].pChannelThread, SIGINT);
+		pChannel->nThreadStatus = 2;
+		//sceKernelDeleteThread(gpReadInfo[channel].pChannelThread);
 #else
 		if (pChannel->bReading) {
 			pChannel->nSectorsToRead = 0;
@@ -378,83 +372,84 @@ RemoveFirstInQueue(Queue *queue)
 	queue->head = (queue->head + 1) % queue->size;
 }
 
-void *CdStreamThread(void *param)
+int *CdStreamThread(SceSize args, void *param)
 {
 	debug("Created cdstream thread\n");
 
 #ifndef ONE_THREAD_PER_CHANNEL
-    while (gCdStreamThreadStatus != 2) {
+	while (gCdStreamThreadStatus != 2) {
 		sem_wait(&gCdStreamSema);
-        int32 channel = GetFirstInQueue(&gChannelRequestQ);
+		int32 channel = GetFirstInQueue(&gChannelRequestQ);
 #else
-    int channel = *((int*)param);
-    while (gpReadInfo[channel].nThreadStatus != 2){
+	int channel = *((int*)param);
+	while (gpReadInfo[channel].nThreadStatus != 2) {
 		sem_wait(&gpReadInfo[channel].pStartSemaphore);
 #endif
-		ASSERT( channel < gNumChannels );
+		ASSERT(channel < gNumChannels);
 
 		CdReadInfo *pChannel = &gpReadInfo[channel];
-		ASSERT( pChannel != nil );
+		ASSERT(pChannel != nil);
 
 #ifdef ONE_THREAD_PER_CHANNEL
-        if (gpReadInfo[channel].nThreadStatus == 0){
-            gpReadInfo[channel].nThreadStatus = 1;
+		if (gpReadInfo[channel].nThreadStatus == 0) {
+			gpReadInfo[channel].nThreadStatus = 1;
 #else
-        if (gCdStreamThreadStatus == 0){
-            gCdStreamThreadStatus = 1;
+		if (gCdStreamThreadStatus == 0) {
+			gCdStreamThreadStatus = 1;
 #endif
 
 #ifdef __linux__
-            pid_t tid = syscall(SYS_gettid);
-            int ret = setpriority(PRIO_PROCESS, tid, getpriority(PRIO_PROCESS, getpid()) + 1);
+			pid_t tid = syscall(SYS_gettid);
+			int ret = setpriority(PRIO_PROCESS, tid, getpriority(PRIO_PROCESS, getpid()) + 1);
 #endif
-	}
+		}
 
 		// spurious wakeup or we sent interrupt signal for flushing
-		if(pChannel->nSectorsToRead == 0)
-            continue;
+		if (pChannel->nSectorsToRead == 0)
+			continue;
 
 		pChannel->bReading = true;
 
-		if ( pChannel->nStatus == STREAM_NONE )
+		if (pChannel->nStatus == STREAM_NONE)
 		{
-            ASSERT(pChannel->hFile >= 0);
-            ASSERT(pChannel->pBuffer != nil );
+			ASSERT(pChannel->hFile >= 0);
+			ASSERT(pChannel->pBuffer != nil);
 
 			lseek(pChannel->hFile, pChannel->nSectorOffset * CDSTREAM_SECTOR_SIZE, SEEK_SET);
-		    if (read(pChannel->hFile, pChannel->pBuffer, pChannel->nSectorsToRead * CDSTREAM_SECTOR_SIZE) == -1) {
+			if (read(pChannel->hFile, pChannel->pBuffer, pChannel->nSectorsToRead * CDSTREAM_SECTOR_SIZE) == -1) {
 				// pChannel->nSectorsToRead == 0 at this point means we wanted to flush channel
-                pChannel->nStatus = pChannel->nSectorsToRead == 0 ? STREAM_NONE : STREAM_ERROR;
-            } else {
-                pChannel->nStatus = STREAM_NONE;
-            }
+				pChannel->nStatus = pChannel->nSectorsToRead == 0 ? STREAM_NONE : STREAM_ERROR;
+			}
+			else {
+				pChannel->nStatus = STREAM_NONE;
+			}
 		}
-	
+
 #ifndef ONE_THREAD_PER_CHANNEL
 		RemoveFirstInQueue(&gChannelRequestQ);
 #endif
 
 		pChannel->nSectorsToRead = 0;
 
-		if ( pChannel->bLocked )
+		if (pChannel->bLocked)
 		{
 			sem_post(&pChannel->pDoneSemaphore);
 		}
 		pChannel->bReading = false;
-	}
+		}
 #ifndef ONE_THREAD_PER_CHANNEL
-    for ( int32 i = 0; i < gNumChannels; i++ )
-    {
-        sem_destroy(&gpReadInfo[i].pDoneSemaphore);
-    }
-    sem_destroy(&gCdStreamSema);
+	for (int32 i = 0; i < gNumChannels; i++)
+	{
+		sem_destroy(&gpReadInfo[i].pDoneSemaphore);
+	}
+	sem_destroy(&gCdStreamSema);
 	free(gChannelRequestQ.items);
 #else
-    sem_destroy(&gpReadInfo[channel].pStartSemaphore);
-    sem_destroy(&gpReadInfo[channel].pDoneSemaphore);
+	sem_destroy(&gpReadInfo[channel].pStartSemaphore);
+	sem_destroy(&gpReadInfo[channel].pDoneSemaphore);
 #endif
-    free(gpReadInfo);
-	pthread_exit(nil);
+	free(gpReadInfo);
+	return sceKernelExitDeleteThread(0);
 }
 
 bool
