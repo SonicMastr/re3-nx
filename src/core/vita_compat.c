@@ -10,14 +10,51 @@
 #include <time.h>
 #include <psp2/rtc.h>
 #include <psp2/kernel/processmgr.h>
+#include <psp2/kernel/clib.h>
 #include "vita_compat.h"
 
 #include <stdlib.h>
 #include <string.h>
 
+int _newlib_heap_size_user = 1 * 1024 * 1024;
+
+// Allocations override
+
+void *memset(void * ptr, int value, size_t num) {
+	return sceClibMemset(ptr, value, num);
+}
+
+void *memmove(void * destination, const void * source, size_t num) {
+	return sceClibMemmove(destination, source, num);
+}
+
+void *memcpy(void * destination, const void * source, size_t num) {
+	return sceClibMemcpy(destination, source, num);
+}
+
+void *malloc(size_t size) {
+	return sceLibcMalloc(size);
+}
+
+void *calloc(size_t nitems, size_t size) {
+	return sceLibcCalloc(nitems, size);
+}
+
+void *realloc(void *ptr, size_t size) {
+	return sceLibcRealloc(ptr, size);
+}
+
+void *memalign(size_t blocksize, size_t bytes) {
+	return sceLibcMemalign(blocksize, bytes);
+}
+
+void free(void *ptr) {
+	sceLibcFree(ptr);
+}
+
 int _vita_getcwd(char *buf, size_t size)
 {
-    const char *cwd = "ux0:data/RE3";
+    const char *cwd = "uma0:data/RE3";
 
     if (strlen(cwd)+1 > size)
     {

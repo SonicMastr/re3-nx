@@ -30,7 +30,7 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-threadsafe-statics
 LDFLAGS	=	-g $(ARCH) -Wl,-Map,$(notdir $*.map)
 LIBS	:=  -lrw -lglfw3 -lpib -lopenal -lSDL2 -lvita2d -lSceDisplayUser_stub -lSceDisplay_stub -lSceCommonDialog_stub -lSceLibKernel_stub -lSceThreadmgr_stub \
 				-lSceModulemgr_stub -lSceSysmodule_stub -lSceIofilemgr_stub -lSceGxm_stub \
-				-lSceCtrl_stub -lSceHid_stub -lSceAudio_stub -lSceTouch_stub -lm -lpthread -lmpg123
+				-lSceCtrl_stub -lSceHid_stub -lSceAudio_stub -lSceTouch_stub -lm -lpthread -lmpg123 -lSceLibcCompat_stub_weak
 
 
 all: $(TARGET).vpk
@@ -43,10 +43,15 @@ eboot.bin: $(TARGET).velf
 	dolce-make-fself -c $< $@
 
 %.velf: %.elf
-	dolce-elf-create -h 4194304 $< $@
+	dolce-elf-create -h 32194304 $< $@
 
 $(TARGET).elf: $(OBJS)
 	$(CXX) $(CXXFLAGS) $^ $(LIBS) -o $@
+
+prepare:
+	@mkdir -p ${DOLCESDK}/$(PREFIX)/lib/
+	@cp lib/libSceLibcCompat_stub_weak.a ${DOLCESDK}/$(PREFIX)/lib/
+	@echo "All Set!"
 
 clean:
 	@rm -rf $(TARGET).vpk $(TARGET).velf $(TARGET).elf $(OBJS) \
