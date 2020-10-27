@@ -54,7 +54,7 @@ void free(void *ptr) {
 
 int _vita_getcwd(char *buf, size_t size)
 {
-    const char *cwd = "uma0:data/RE3";
+    const char *cwd = "ux0:data/RE3";
 
     if (strlen(cwd)+1 > size)
     {
